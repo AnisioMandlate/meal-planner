@@ -1,2 +1,28 @@
 .container {
 }
+
+.week_days_grid {
+  margin-top: 25px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.week_day {
+  border: 0.6px solid #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px 0;
+  height: 50px;
+  width: 42px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.week_day:nth-child(1) {
+  color: #fff;
+  font-weight: 600;
+  background-color: #017371;
+  border: 0.6px solid #fff;
+}

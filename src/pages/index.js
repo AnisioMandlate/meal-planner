@@ -22,7 +22,37 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
-          <h1>Meal Planner</h1>
+          <h1>Meal Plan</h1>
+          <div className={styles.week_days_grid}>
+            <div className={styles.week_day}>
+              <p>Mon</p>
+              <span>1</span>
+            </div>
+            <div className={styles.week_day}>
+              <p>Tue</p>
+              <span>2</span>
+            </div>
+            <div className={styles.week_day}>
+              <p>Wed</p>
+              <span>3</span>
+            </div>
+            <div className={styles.week_day}>
+              <p>Thr</p>
+              <span>4</span>
+            </div>
+            <div className={styles.week_day}>
+              <p>Fri</p>
+              <span>5</span>
+            </div>
+            <div className={styles.week_day}>
+              <p>Sat</p>
+              <span>6</span>
+            </div>
+            <div className={styles.week_day}>
+              <p>Sun</p>
+              <span>7</span>
+            </div>
+          </div>
         </div>
       </main>
     </>
