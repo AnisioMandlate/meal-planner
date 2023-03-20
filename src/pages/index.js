@@ -1,12 +1,14 @@
 import Head from "next/head";
-
+import Image from "next/image";
 // Styles
 import styles from "@/styles/Home.module.css";
 
-// Fonts
-import { Inter } from "@next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+// Images/Icons
+import { PlusCircle, Edit } from "feather-icons-react";
+import Breakfast from "@/assets/breakfast.jpg";
+import Beanstew from "@/assets/bean_stew.jpg";
+import Picanha from "@/assets/picanha.jpg";
+import Snacks from "@/assets/snacks.jpg";
 
 export default function Home() {
   return (
@@ -53,6 +55,86 @@ export default function Home() {
               <span>7</span>
             </div>
           </div>
+
+          <div className={styles.current_date}>
+            <p>Monday, 1st April</p>
+            <button>
+              <PlusCircle color="#017371" />
+            </button>
+          </div>
+
+          <>
+            <div className={styles.meal_list}>
+              <div className={styles.meal}>
+                <h2 className={styles.meal_type}>Breakfast</h2>
+                <div className={styles.meal_details}>
+                  <Image src={Breakfast} className={styles.meal_image} />
+                  <div className={styles.meal_description}>
+                    <p className={styles.meal_name}>
+                      Pão com ovo estrelado e queijo
+                    </p>
+                    <span className={styles.meal_calories}>200 cal</span>
+                  </div>
+                  <button className={styles.edit_meal_button}>
+                    <Edit color="#929CAD" />
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.meal}>
+                <h2 className={styles.meal_type}>Lunch</h2>
+                <div className={styles.meal_details}>
+                  <Image src={Beanstew} className={styles.meal_image} />
+                  <div className={styles.meal_description}>
+                    <p className={styles.meal_name}>Feijoada</p>
+                    <span className={styles.meal_calories}>200 cal</span>
+                  </div>
+                  <button className={styles.edit_meal_button}>
+                    <Edit color="#929CAD" />
+                  </button>
+                </div>
+
+                <div className={styles.meal_details}>
+                  <Image src={Picanha} className={styles.meal_image} />
+                  <div className={styles.meal_description}>
+                    <p className={styles.meal_name}>Picanha</p>
+                    <span className={styles.meal_calories}>200 cal</span>
+                  </div>
+                  <button className={styles.edit_meal_button}>
+                    <Edit color="#929CAD" />
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.meal}>
+                <h2 className={styles.meal_type}>Snacks</h2>
+                <div className={styles.meal_details}>
+                  <Image src={Snacks} className={styles.meal_image} />
+                  <div className={styles.meal_description}>
+                    <p className={styles.meal_name}>Frutas</p>
+                    <span className={styles.meal_calories}>200 cal</span>
+                  </div>
+                  <button className={styles.edit_meal_button}>
+                    <Edit color="#929CAD" />
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.meal}>
+                <h2 className={styles.meal_type}>Dinner</h2>
+                <div className={styles.meal_details}>
+                  <Image src={Beanstew} className={styles.meal_image} />
+                  <div className={styles.meal_description}>
+                    <p className={styles.meal_name}>Feijoada</p>
+                    <span className={styles.meal_calories}>200 cal</span>
+                  </div>
+                  <button className={styles.edit_meal_button}>
+                    <Edit color="#929CAD" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
         </div>
       </main>
     </>
