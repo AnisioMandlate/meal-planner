@@ -7,8 +7,8 @@ import styles from "@/styles/Home.module.css";
 import { PlusCircle, Edit } from "feather-icons-react";
 import Breakfast from "@/assets/breakfast.jpg";
 import Beanstew from "@/assets/bean_stew.jpg";
-import Picanha from "@/assets/picanha.jpg";
-import Snacks from "@/assets/snacks.jpg";
+import Picanha from "@/assets/picanha.jpeg";
+import Snacks from "@/assets/snacks.jpeg";
 
 export default function Home() {
   return (
@@ -64,11 +64,15 @@ export default function Home() {
           </div>
 
           <>
-            <div className={styles.meal_list}>
-              <div className={styles.meal}>
+            <ul className={styles.meal_list}>
+              <li className={styles.meal}>
                 <h2 className={styles.meal_type}>Breakfast</h2>
                 <div className={styles.meal_details}>
-                  <Image src={Breakfast} className={styles.meal_image} />
+                  <Image
+                    src={Breakfast}
+                    className={styles.meal_image}
+                    alt="Image of the meal"
+                  />
                   <div className={styles.meal_description}>
                     <p className={styles.meal_name}>
                       Pão com ovo estrelado e queijo
@@ -79,12 +83,16 @@ export default function Home() {
                     <Edit color="#929CAD" />
                   </button>
                 </div>
-              </div>
+              </li>
 
-              <div className={styles.meal}>
+              <li className={styles.meal}>
                 <h2 className={styles.meal_type}>Lunch</h2>
                 <div className={styles.meal_details}>
-                  <Image src={Beanstew} className={styles.meal_image} />
+                  <Image
+                    src={Beanstew}
+                    className={styles.meal_image}
+                    alt="Image of the meal"
+                  />
                   <div className={styles.meal_description}>
                     <p className={styles.meal_name}>Feijoada</p>
                     <span className={styles.meal_calories}>200 cal</span>
@@ -95,7 +103,11 @@ export default function Home() {
                 </div>
 
                 <div className={styles.meal_details}>
-                  <Image src={Picanha} className={styles.meal_image} />
+                  <Image
+                    src={Picanha}
+                    className={styles.meal_image}
+                    alt="Image of the meal"
+                  />
                   <div className={styles.meal_description}>
                     <p className={styles.meal_name}>Picanha</p>
                     <span className={styles.meal_calories}>200 cal</span>
@@ -104,12 +116,16 @@ export default function Home() {
                     <Edit color="#929CAD" />
                   </button>
                 </div>
-              </div>
+              </li>
 
-              <div className={styles.meal}>
+              <li className={styles.meal}>
                 <h2 className={styles.meal_type}>Snacks</h2>
                 <div className={styles.meal_details}>
-                  <Image src={Snacks} className={styles.meal_image} />
+                  <Image
+                    src={Snacks}
+                    className={styles.meal_image}
+                    alt="Image of the meal"
+                  />
                   <div className={styles.meal_description}>
                     <p className={styles.meal_name}>Frutas</p>
                     <span className={styles.meal_calories}>200 cal</span>
@@ -118,12 +134,16 @@ export default function Home() {
                     <Edit color="#929CAD" />
                   </button>
                 </div>
-              </div>
+              </li>
 
-              <div className={styles.meal}>
+              <li className={styles.meal}>
                 <h2 className={styles.meal_type}>Dinner</h2>
                 <div className={styles.meal_details}>
-                  <Image src={Beanstew} className={styles.meal_image} />
+                  <Image
+                    src={Beanstew}
+                    className={styles.meal_image}
+                    alt="Image of the meal"
+                  />
                   <div className={styles.meal_description}>
                     <p className={styles.meal_name}>Feijoada</p>
                     <span className={styles.meal_calories}>200 cal</span>
@@ -132,8 +152,8 @@ export default function Home() {
                     <Edit color="#929CAD" />
                   </button>
                 </div>
-              </div>
-            </div>
+              </li>
+            </ul>
           </>
         </div>
       </main>

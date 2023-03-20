@@ -42,10 +42,12 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  margin-bottom: 20px;
+  list-style: none;
 }
 
 .meal {
-  margin-top: 52px;
+  margin-top: 45px;
 }
 
 .meal_type {
@@ -56,21 +58,24 @@
   text-transform: uppercase;
 }
 
+.meal .meal_details:not(:last-child) {
+  margin-bottom: 25px;
+}
+
 .meal_details {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
 }
 
 .meal_image {
-  width: 100px;
-  height: auto;
+  height: 60px;
+  width: auto;
   background-size: cover;
 }
 
 .meal_description {
   margin: 0 15px;
+  flex: 1;
 }
 
 .meal_name {
