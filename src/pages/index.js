@@ -11,7 +11,16 @@ import Beanstew from "@/assets/bean_stew.jpg";
 import Picanha from "@/assets/picanha.jpeg";
 import Snacks from "@/assets/snacks.jpeg";
 
+// API
+import { supabase } from "@/utils/supabase";
+
 export default function Home() {
+  async function getMeals() {
+    let { data: meals, error } = await supabase.from("meals").select("*");
+
+    console.log(meals);
+  }
+
   return (
     <>
       <Head>
