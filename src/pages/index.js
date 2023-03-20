@@ -1,25 +1,39 @@
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
-
+import { addDays, eachDayOfInterval, format } from "date-fns";
 // Styles
 import styles from "@/styles/Home.module.css";
-
 // Images/Icons
 import { PlusCircle, Edit2 } from "feather-icons-react";
 import Breakfast from "@/assets/breakfast.jpg";
 import Beanstew from "@/assets/bean_stew.jpg";
 import Picanha from "@/assets/picanha.jpeg";
 import Snacks from "@/assets/snacks.jpeg";
-
 // API
 import { supabase } from "@/utils/supabase";
 
 export default function Home() {
-  async function getMeals() {
-    let { data: meals, error } = await supabase.from("meals").select("*");
+  const [meals, setMeals] = useState([]);
 
-    console.log(meals);
-  }
+  // Date Manipulation
+  const NUMBER_DAYS = 6;
+  const presentDay = new Date();
+  const after07Days = addDays(presentDay, NUMBER_DAYS);
+  const days = eachDayOfInterval({ start: presentDay, end: after07Days });
+
+  useEffect(() => {
+    getMeals();
+  }, []);
+
+  const getMeals = () => {
+    supabase
+      .from("meals")
+      .select("*")
+      .then(({ data }) => setMeals(data))
+      .catch((err) => alert(err.message))
+      .finally();
+  };
 
   return (
     <>
@@ -36,38 +50,16 @@ export default function Home() {
         <div className={styles.container}>
           <h1>Meal Plan</h1>
           <div className={styles.week_days_grid}>
-            <div className={styles.week_day}>
-              <p>Mon</p>
-              <span>1</span>
-            </div>
-            <div className={styles.week_day}>
-              <p>Tue</p>
-              <span>2</span>
-            </div>
-            <div className={styles.week_day}>
-              <p>Wed</p>
-              <span>3</span>
-            </div>
-            <div className={styles.week_day}>
-              <p>Thr</p>
-              <span>4</span>
-            </div>
-            <div className={styles.week_day}>
-              <p>Fri</p>
-              <span>5</span>
-            </div>
-            <div className={styles.week_day}>
-              <p>Sat</p>
-              <span>6</span>
-            </div>
-            <div className={styles.week_day}>
-              <p>Sun</p>
-              <span>7</span>
-            </div>
+            {days.map((day) => (
+              <div className={styles.week_day} key={day}>
+                <p>{format(day, "EEE")}</p>
+                <span>{format(day, "d")}</span>
+              </div>
+            ))}
           </div>
 
           <div className={styles.current_date}>
-            <p>Monday, 1st April</p>
+            <p>{format(presentDay, "EEEE, do LLLL")}</p>
             <button>
               <PlusCircle color="#017371" />
             </button>
@@ -89,9 +81,9 @@ export default function Home() {
                     </p>
                     <span className={styles.meal_calories}>200 cal</span>
                   </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
+                  {/* <button className={styles.edit_meal_button}>
+                    <Edit2 color="#929CAD" size="14" />
+                  </button> */}
                 </div>
               </li>
 

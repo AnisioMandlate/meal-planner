@@ -71,6 +71,7 @@
   height: 60px;
   width: auto;
   background-size: cover;
+  border-radius: 5px;
 }
 
 .meal_description {
