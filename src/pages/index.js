@@ -1,10 +1,11 @@
 import Head from "next/head";
 import Image from "next/image";
+
 // Styles
 import styles from "@/styles/Home.module.css";
 
 // Images/Icons
-import { PlusCircle, Edit } from "feather-icons-react";
+import { PlusCircle, Edit2 } from "feather-icons-react";
 import Breakfast from "@/assets/breakfast.jpg";
 import Beanstew from "@/assets/bean_stew.jpg";
 import Picanha from "@/assets/picanha.jpeg";
@@ -80,7 +81,7 @@ export default function Home() {
                     <span className={styles.meal_calories}>200 cal</span>
                   </div>
                   <button className={styles.edit_meal_button}>
-                    <Edit color="#929CAD" />
+                    <Edit2 color="#929CAD" />
                   </button>
                 </div>
               </li>
@@ -98,7 +99,7 @@ export default function Home() {
                     <span className={styles.meal_calories}>200 cal</span>
                   </div>
                   <button className={styles.edit_meal_button}>
-                    <Edit color="#929CAD" />
+                    <Edit2 color="#929CAD" />
                   </button>
                 </div>
 
@@ -113,7 +114,7 @@ export default function Home() {
                     <span className={styles.meal_calories}>200 cal</span>
                   </div>
                   <button className={styles.edit_meal_button}>
-                    <Edit color="#929CAD" />
+                    <Edit2 color="#929CAD" />
                   </button>
                 </div>
               </li>
@@ -131,7 +132,7 @@ export default function Home() {
                     <span className={styles.meal_calories}>200 cal</span>
                   </div>
                   <button className={styles.edit_meal_button}>
-                    <Edit color="#929CAD" />
+                    <Edit2 color="#929CAD" />
                   </button>
                 </div>
               </li>
@@ -149,7 +150,7 @@ export default function Home() {
                     <span className={styles.meal_calories}>200 cal</span>
                   </div>
                   <button className={styles.edit_meal_button}>
-                    <Edit color="#929CAD" />
+                    <Edit2 color="#929CAD" />
                   </button>
                 </div>
               </li>
