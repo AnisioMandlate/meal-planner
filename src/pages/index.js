@@ -69,23 +69,32 @@ export default function Home() {
             <div className={styles.meal_list}>
               <h2 className={styles.meal_type}>Breakfast</h2>
               <ul className={styles.meals}>
-                <li className={styles.meal_details}>
-                  <>
-                    <Image
-                      src={Breakfast}
-                      className={styles.meal_image}
-                      alt="Image of the meal"
-                    />
-                    <div className={styles.meal_description}>
-                      <p className={styles.meal_name}>
-                        Pão com ovo estrelado e queijo
-                      </p>
-                      <span className={styles.meal_calories}>200 cal</span>
-                    </div>
-                  </>
-                </li>
+                {meals.map(
+                  (item) =>
+                    item.meal_type === "Breakfast" && (
+                      <li className={styles.meal_details} key={item.meal_name}>
+                        <>
+                          <Image
+                            src={item.meal_photo_url}
+                            className={styles.meal_image}
+                            alt={`Image of ${item.meal_name}`}
+                            width={60}
+                            height={60}
+                            priority={true}
+                          />
+                          <div className={styles.meal_description}>
+                            <p className={styles.meal_name}>{item.meal_name}</p>
+                            <span className={styles.meal_calories}>
+                              {item.meal_calories}
+                            </span>
+                          </div>
+                        </>
+                      </li>
+                    )
+                )}
               </ul>
             </div>
+
             <div className={styles.meal_list}>
               <h2 className={styles.meal_type}>Lunch</h2>
               <ul className={styles.meals}>
