@@ -3,11 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
-import { PlusCircle, Edit2 } from "feather-icons-react";
-import Breakfast from "@/assets/breakfast.jpg";
-import Beanstew from "@/assets/bean_stew.jpg";
-import Picanha from "@/assets/picanha.jpeg";
-import Snacks from "@/assets/snacks.jpeg";
+import { PlusCircle } from "feather-icons-react";
 import { supabase } from "@/utils/supabase";
 
 export default function Home() {
