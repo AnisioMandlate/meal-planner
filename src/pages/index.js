@@ -70,7 +70,12 @@ export default function Home() {
           <h1>Meal Plan</h1>
           <div className={styles.week_days_grid}>
             {days.map((day) => (
-              <div className={styles.week_day} key={day}>
+              <div
+                className={`${styles.week_day} ${
+                  presentDay.getDay() === day.getDay() && styles.active
+                }`}
+                key={day}
+              >
                 <p>{format(day, "EEE")}</p>
                 <span>{format(day, "d")}</span>
               </div>
