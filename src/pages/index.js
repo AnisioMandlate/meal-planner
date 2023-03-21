@@ -64,12 +64,6 @@ export default function Home() {
     <>
       <Head>
         <title>Meal Planner App</title>
-        <meta
-          name="description"
-          content="An app to keep track of your meals and how much you consume."
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
