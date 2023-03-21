@@ -66,96 +66,107 @@ export default function Home() {
           </div>
 
           <>
-            <ul className={styles.meal_list}>
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Breakfast</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Breakfast}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>
-                      Pão com ovo estrelado e queijo
-                    </p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  {/* <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" size="14" />
-                  </button> */}
-                </div>
-              </li>
+            <div className={styles.meal_list}>
+              <h2 className={styles.meal_type}>Breakfast</h2>
+              <ul className={styles.meals}>
+                <li className={styles.meal_details}>
+                  <>
+                    <Image
+                      src={Breakfast}
+                      className={styles.meal_image}
+                      alt="Image of the meal"
+                    />
+                    <div className={styles.meal_description}>
+                      <p className={styles.meal_name}>
+                        Pão com ovo estrelado e queijo
+                      </p>
+                      <span className={styles.meal_calories}>200 cal</span>
+                    </div>
+                  </>
+                </li>
+              </ul>
+            </div>
+            <div className={styles.meal_list}>
+              <h2 className={styles.meal_type}>Lunch</h2>
+              <ul className={styles.meals}>
+                <li className={styles.meal_details}>
+                  <>
+                    <Image
+                      src={Beanstew}
+                      className={styles.meal_image}
+                      alt="Image of the meal"
+                    />
+                    <div className={styles.meal_description}>
+                      <p className={styles.meal_name}>Feijoada</p>
+                      <span className={styles.meal_calories}>200 cal</span>
+                    </div>
+                    <button className={styles.edit_meal_button}>
+                      <Edit2 color="#929CAD" />
+                    </button>
+                  </>
+                </li>
+                <li className={styles.meal_details}>
+                  <>
+                    <Image
+                      src={Picanha}
+                      className={styles.meal_image}
+                      alt="Image of the meal"
+                    />
+                    <div className={styles.meal_description}>
+                      <p className={styles.meal_name}>Picanha</p>
+                      <span className={styles.meal_calories}>200 cal</span>
+                    </div>
+                    <button className={styles.edit_meal_button}>
+                      <Edit2 color="#929CAD" />
+                    </button>
+                  </>
+                </li>
+              </ul>
+            </div>
 
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Lunch</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Beanstew}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Feijoada</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
+            <div className={styles.meal_list}>
+              <h2 className={styles.meal_type}>Snacks</h2>
+              <ul className={styles.meals}>
+                <li className={styles.meal_details}>
+                  <>
+                    <Image
+                      src={Snacks}
+                      className={styles.meal_image}
+                      alt="Image of the meal"
+                    />
+                    <div className={styles.meal_description}>
+                      <p className={styles.meal_name}>Frutas</p>
+                      <span className={styles.meal_calories}>200 cal</span>
+                    </div>
+                    <button className={styles.edit_meal_button}>
+                      <Edit2 color="#929CAD" />
+                    </button>
+                  </>
+                </li>
+              </ul>
+            </div>
 
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Picanha}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Picanha</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-              </li>
-
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Snacks</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Snacks}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Frutas</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-              </li>
-
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Dinner</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Beanstew}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Feijoada</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-              </li>
-            </ul>
+            <div className={styles.meal_list}>
+              <h2 className={styles.meal_type}>Dinner</h2>
+              <ul className={styles.meals}>
+                <li className={styles.meal_details}>
+                  <>
+                    <Image
+                      src={Beanstew}
+                      className={styles.meal_image}
+                      alt="Image of the meal"
+                    />
+                    <div className={styles.meal_description}>
+                      <p className={styles.meal_name}>Feijoada</p>
+                      <span className={styles.meal_calories}>200 cal</span>
+                    </div>
+                    <button className={styles.edit_meal_button}>
+                      <Edit2 color="#929CAD" />
+                    </button>
+                  </>
+                </li>
+              </ul>
+            </div>
           </>
         </div>
       </main>

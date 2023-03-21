@@ -42,12 +42,11 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  margin-bottom: 20px;
-  list-style: none;
+  margin: 45px 0 10px 0;
 }
 
-.meal {
-  margin-top: 45px;
+.meals {
+  list-style: none;
 }
 
 .meal_type {
@@ -58,7 +57,7 @@
   text-transform: uppercase;
 }
 
-.meal .meal_details:not(:last-child) {
+.meals .meal_details:not(:last-child) {
   margin-bottom: 25px;
 }
 
