@@ -2,26 +2,33 @@
   margin-top: 25px;
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 60px);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow: -moz-scrollbars-none;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.week_days_grid::-webkit-scrollbar {
+  display: none;
 }
 
 .week_day {
-  border: 0.6px solid #000;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 7px 0;
-  height: 50px;
-  width: 42px;
+  height: 60px;
   font-weight: 500;
   font-size: 14px;
 }
 
 .week_day:nth-child(1) {
-  color: #fff;
+  color: #017371;
   font-weight: 600;
-  background-color: #017371;
-  border: 0.6px solid #fff;
+  border-bottom: 2px solid #017371;
 }
 
 .current_date {
