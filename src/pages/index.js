@@ -2,22 +2,26 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { addDays, eachDayOfInterval, format } from "date-fns";
-// Styles
 import styles from "@/styles/Home.module.css";
-// Images/Icons
 import { PlusCircle, Edit2 } from "feather-icons-react";
 import Breakfast from "@/assets/breakfast.jpg";
 import Beanstew from "@/assets/bean_stew.jpg";
 import Picanha from "@/assets/picanha.jpeg";
 import Snacks from "@/assets/snacks.jpeg";
-// API
 import { supabase } from "@/utils/supabase";
 
 export default function Home() {
   const [meals, setMeals] = useState([]);
 
-  // Date Manipulation
   const NUMBER_DAYS = 6;
+  const ORDER = [
+    "breakfast",
+    "break lunch",
+    "lunch",
+    "snacks",
+    "dinner",
+    "late dinner",
+  ];
   const presentDay = new Date();
   const after07Days = addDays(presentDay, NUMBER_DAYS);
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
@@ -30,7 +34,32 @@ export default function Home() {
     supabase
       .from("meals")
       .select("*")
-      .then(({ data }) => setMeals(data))
+      .then(({ data }) => {
+        setMeals(
+          data
+            .reduce((prev, crr) => {
+              const existingMeal = prev.find(
+                (el) =>
+                  el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
+              );
+
+              existingMeal
+                ? (existingMeal.meals = [...existingMeal.meals, crr])
+                : (prev = [
+                    ...prev,
+                    {
+                      meal_type: crr.meal_type.toLowerCase(),
+                      meals: [crr],
+                    },
+                  ]);
+
+              return prev;
+            }, [])
+            .sort(
+              (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
+            )
+        );
+      })
       .catch((err) => alert(err.message))
       .finally();
   };
@@ -66,116 +95,33 @@ export default function Home() {
           </div>
 
           <>
-            <div className={styles.meal_list}>
-              <h2 className={styles.meal_type}>Breakfast</h2>
-              <ul className={styles.meals}>
-                {meals.map(
-                  (item) =>
-                    item.meal_type === "Breakfast" && (
-                      <li className={styles.meal_details} key={item.meal_name}>
-                        <>
-                          <Image
-                            src={item.meal_photo_url}
-                            className={styles.meal_image}
-                            alt={`Image of ${item.meal_name}`}
-                            width={60}
-                            height={60}
-                            priority={true}
-                          />
-                          <div className={styles.meal_description}>
-                            <p className={styles.meal_name}>{item.meal_name}</p>
-                            <span className={styles.meal_calories}>
-                              {item.meal_calories}
-                            </span>
-                          </div>
-                        </>
-                      </li>
-                    )
-                )}
-              </ul>
-            </div>
-
-            <div className={styles.meal_list}>
-              <h2 className={styles.meal_type}>Lunch</h2>
-              <ul className={styles.meals}>
-                <li className={styles.meal_details}>
-                  <>
-                    <Image
-                      src={Beanstew}
-                      className={styles.meal_image}
-                      alt="Image of the meal"
-                    />
-                    <div className={styles.meal_description}>
-                      <p className={styles.meal_name}>Feijoada</p>
-                      <span className={styles.meal_calories}>200 cal</span>
-                    </div>
-                    <button className={styles.edit_meal_button}>
-                      <Edit2 color="#929CAD" />
-                    </button>
-                  </>
-                </li>
-                <li className={styles.meal_details}>
-                  <>
-                    <Image
-                      src={Picanha}
-                      className={styles.meal_image}
-                      alt="Image of the meal"
-                    />
-                    <div className={styles.meal_description}>
-                      <p className={styles.meal_name}>Picanha</p>
-                      <span className={styles.meal_calories}>200 cal</span>
-                    </div>
-                    <button className={styles.edit_meal_button}>
-                      <Edit2 color="#929CAD" />
-                    </button>
-                  </>
-                </li>
-              </ul>
-            </div>
-
-            <div className={styles.meal_list}>
-              <h2 className={styles.meal_type}>Snacks</h2>
-              <ul className={styles.meals}>
-                <li className={styles.meal_details}>
-                  <>
-                    <Image
-                      src={Snacks}
-                      className={styles.meal_image}
-                      alt="Image of the meal"
-                    />
-                    <div className={styles.meal_description}>
-                      <p className={styles.meal_name}>Frutas</p>
-                      <span className={styles.meal_calories}>200 cal</span>
-                    </div>
-                    <button className={styles.edit_meal_button}>
-                      <Edit2 color="#929CAD" />
-                    </button>
-                  </>
-                </li>
-              </ul>
-            </div>
-
-            <div className={styles.meal_list}>
-              <h2 className={styles.meal_type}>Dinner</h2>
-              <ul className={styles.meals}>
-                <li className={styles.meal_details}>
-                  <>
-                    <Image
-                      src={Beanstew}
-                      className={styles.meal_image}
-                      alt="Image of the meal"
-                    />
-                    <div className={styles.meal_description}>
-                      <p className={styles.meal_name}>Feijoada</p>
-                      <span className={styles.meal_calories}>200 cal</span>
-                    </div>
-                    <button className={styles.edit_meal_button}>
-                      <Edit2 color="#929CAD" />
-                    </button>
-                  </>
-                </li>
-              </ul>
-            </div>
+            {meals.map((mealGroup) => (
+              <div key={mealGroup.meal_type} className={styles.meal_list}>
+                <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
+                <ul className={styles.meals}>
+                  {mealGroup.meals.map((meal) => (
+                    <li className={styles.meal_details} key={meal.meal_name}>
+                      <>
+                        <Image
+                          src={meal.meal_photo_url}
+                          className={styles.meal_image}
+                          alt={`Image of ${meal.meal_name}`}
+                          width={60}
+                          height={60}
+                          priority={true}
+                        />
+                        <div className={styles.meal_description}>
+                          <p className={styles.meal_name}>{meal.meal_name}</p>
+                          <span className={styles.meal_calories}>
+                            {meal.meal_calories}
+                          </span>
+                        </div>
+                      </>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </>
         </div>
       </main>
