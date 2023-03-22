@@ -1,5 +1,20 @@
-.week_days_grid {
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header button {
+  border: 0;
+  background: none;
+}
+
+.week_days_grid,
+.current_date {
   margin-top: 25px;
+}
+
+.week_days_grid {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(7, 60px);
@@ -34,16 +49,8 @@
 
 .current_date {
   margin-top: 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   font-weight: 600;
   font-size: 18px;
-}
-
-.current_date button {
-  border: 0;
-  background: none;
 }
 
 .meal_list {

@@ -67,7 +67,12 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
-          <h1>Meal Plan</h1>
+          <header className={styles.header}>
+            <h1>Meal Plan</h1>
+            <button onClick={() => console.log("I was clicked!!")}>
+              <PlusCircle color="#017371" />
+            </button>
+          </header>
           <div className={styles.week_days_grid}>
             {days.map((day) => (
               <div
@@ -84,9 +89,6 @@ export default function Home() {
 
           <div className={styles.current_date}>
             <p>{format(presentDay, "EEEE, do LLLL")}</p>
-            <button>
-              <PlusCircle color="#017371" />
-            </button>
           </div>
 
           <>
