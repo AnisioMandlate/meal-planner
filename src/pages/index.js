@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import Image from "next/image";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
@@ -69,9 +70,9 @@ export default function Home() {
         <div className={styles.container}>
           <header className={styles.header}>
             <h1>Meal Plan</h1>
-            <button onClick={() => console.log("I was clicked!!")}>
+            <Link href="/add-meals">
               <PlusCircle color="#017371" />
-            </button>
+            </Link>
           </header>
           <div className={styles.week_days_grid}>
             {days.map((day) => (
