@@ -5,11 +5,12 @@ import { ArrowLeft, Upload } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
 
 const AddMeals = () => {
+  const date = new Date();
   const mealPhotoRef = useRef(null);
   const [mealDate, setMealDate] = useState({
-    day: "",
-    year: "",
-    month: "",
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getUTCFullYear(),
   });
   const [mealDetails, setMealDetails] = useState({
     meal_photo: "",
@@ -160,6 +161,8 @@ const AddMeals = () => {
               </div>
             </div>
           </div>
+
+          <button className={styles.add_meal_button}>Add meal</button>
         </div>
       </main>
     </>
