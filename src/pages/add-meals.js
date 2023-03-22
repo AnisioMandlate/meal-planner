@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { ArrowLeft, Upload } from "feather-icons-react";
+import { ArrowLeft, Upload, XCircle } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
+import { supabase } from "@/utils/supabase";
 
 const AddMeals = () => {
   const date = new Date();
@@ -10,7 +11,7 @@ const AddMeals = () => {
   const [mealDate, setMealDate] = useState({
     day: date.getDate(),
     month: date.getMonth() + 1,
-    year: date.getUTCFullYear(),
+    year: date.getFullYear(),
   });
   const [mealDetails, setMealDetails] = useState({
     meal_photo: "",
@@ -28,12 +29,30 @@ const AddMeals = () => {
   };
 
   const onImageChange = (e) => {
-    let images = [];
+    let image;
 
-    for (let i = 0; i < e.target.files.length; i++) {
-      images.push(URL.createObjectURL(e.target.files[i]));
+    if (e.target.files) {
+      image = e.target.files[0];
     }
-    setMealDetails({ ...mealDetails, meal_photo: images[0] });
+
+    supabase.storage
+      .from("images")
+      .upload(`public/${image?.name}`, image)
+      .then((res) => {
+        const { data } = supabase.storage
+          .from("images")
+          .getPublicUrl(res.data.path);
+        setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
+      })
+      .catch((err) => console.log(err.message));
+  };
+
+  const onHandleClearImage = () => {
+    setMealDetails({ ...mealDetails, meal_photo: "" });
+  };
+
+  const onHandleSubmit = () => {
+    console.log("I was submited");
   };
 
   return (
@@ -92,11 +111,25 @@ const AddMeals = () => {
             <h2>Meal Details:-</h2>
             <div className={styles.meal_details_container_group}>
               <div className={styles.meal_details_container_group_item}>
-                <p>Photo</p>
+                <div
+                  className={styles.meal_details_container_group_item_header}
+                >
+                  <p>Photo</p>
+                  {mealDetails.meal_photo != "" ? (
+                    <button
+                      type="button"
+                      onClick={onHandleClearImage}
+                      className={styles.clearImage}
+                    >
+                      Clear Image
+                    </button>
+                  ) : null}
+                </div>
                 <div
                   className={
                     styles.meal_details_container_group_item_image_upload
                   }
+                  onClick={() => mealPhotoRef.current.click()}
                 >
                   <input
                     name="meal_photo"
@@ -162,7 +195,9 @@ const AddMeals = () => {
             </div>
           </div>
 
-          <button className={styles.add_meal_button}>Add meal</button>
+          <button className={styles.add_meal_button} onClick={onHandleSubmit}>
+            Add meal
+          </button>
         </div>
       </main>
     </>
