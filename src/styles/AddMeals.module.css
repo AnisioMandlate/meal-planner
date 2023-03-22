@@ -91,6 +91,6 @@
 }
 
 .meal_details_container_group_item_image_upload img {
-  height: 90%;
+  border-radius: 5px;
   object-fit: cover;
 }

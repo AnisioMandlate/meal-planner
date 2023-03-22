@@ -106,9 +106,18 @@ const AddMeals = () => {
                     ref={mealPhotoRef}
                     onChange={onImageChange}
                   />
-                  <p onClick={() => mealPhotoRef.current.click()}>
-                    <Upload size="34" />
-                  </p>
+                  {mealDetails.meal_photo != "" ? (
+                    <img
+                      alt={`${mealDetails.meal_name} photo`}
+                      src={mealDetails.meal_photo}
+                      height="100%"
+                      width="100%"
+                    />
+                  ) : (
+                    <p onClick={() => mealPhotoRef.current.click()}>
+                      <Upload size="34" />
+                    </p>
+                  )}
                 </div>
               </div>
               <div className={styles.meal_details_container_group_item}>
