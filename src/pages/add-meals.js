@@ -11,9 +11,28 @@ const AddMeals = () => {
     year: "",
     month: "",
   });
+  const [mealDetails, setMealDetails] = useState({
+    meal_photo: "",
+    meal_type: "",
+    meal_name: "",
+    meal_calories: "",
+  });
 
-  const onChangeHandler = (e) => {
+  const onChangeDateHandler = (e) => {
     setMealDate({ ...mealDate, [e.target.name]: e.target.value });
+  };
+
+  const onChangeMealDetails = (e) => {
+    setMealDetails({ ...mealDetails, [e.target.name]: e.target.value });
+  };
+
+  const onImageChange = (e) => {
+    let images = [];
+
+    for (let i = 0; i < e.target.files.length; i++) {
+      images.push(URL.createObjectURL(e.target.files[i]));
+    }
+    setMealDetails({ ...mealDetails, meal_photo: images[0] });
   };
 
   return (
@@ -40,7 +59,7 @@ const AddMeals = () => {
                   placeholder="01"
                   value={mealDate.day}
                   className={styles.meal_date_container_group_item_input}
-                  onChange={onChangeHandler}
+                  onChange={onChangeDateHandler}
                 />
               </div>
               <div className={styles.meal_date_container_group_item}>
@@ -51,7 +70,7 @@ const AddMeals = () => {
                   placeholder="01"
                   value={mealDate.month}
                   className={styles.meal_date_container_group_item_input}
-                  onChange={onChangeHandler}
+                  onChange={onChangeDateHandler}
                 />
               </div>
               <div className={styles.meal_date_container_group_item}>
@@ -62,7 +81,7 @@ const AddMeals = () => {
                   placeholder="2023"
                   value={mealDate.year}
                   className={styles.meal_date_container_group_item_input}
-                  onChange={onChangeHandler}
+                  onChange={onChangeDateHandler}
                 />
               </div>
             </div>
@@ -85,7 +104,7 @@ const AddMeals = () => {
                     className={styles.meal_details_image_upload_hidden}
                     multiple={false}
                     ref={mealPhotoRef}
-                    // onChange={}
+                    onChange={onImageChange}
                   />
                   <p onClick={() => mealPhotoRef.current.click()}>
                     <Upload size="34" />
@@ -97,7 +116,7 @@ const AddMeals = () => {
                 <select
                   name="meal_type"
                   className={styles.meal_details_container_group_item_input}
-                  onChange={onChangeHandler}
+                  onChange={onChangeMealDetails}
                 >
                   <option disabled selected>
                     Breakfast
@@ -112,11 +131,11 @@ const AddMeals = () => {
                 <p>Name</p>
                 <input
                   name="meal_name"
-                  type="number"
+                  type="text"
                   placeholder="Pão com ovo estrelado e queijo"
-                  // value={mealDetails.year}
+                  value={mealDetails.meal_name}
                   className={styles.meal_details_container_group_item_input}
-                  onChange={onChangeHandler}
+                  onChange={onChangeMealDetails}
                 />
               </div>
               <div className={styles.meal_details_container_group_item}>
@@ -125,9 +144,9 @@ const AddMeals = () => {
                   name="meal_calories"
                   type="number"
                   placeholder="200"
-                  // value={mealDetails.year}
+                  value={mealDetails.meal_calories}
                   className={styles.meal_details_container_group_item_input}
-                  onChange={onChangeHandler}
+                  onChange={onChangeMealDetails}
                 />
               </div>
             </div>
