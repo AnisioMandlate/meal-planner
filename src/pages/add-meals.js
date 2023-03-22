@@ -1,9 +1,19 @@
+import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { ArrowLeft } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
 
 const AddMeals = () => {
+  const [mealDate, setMealDate] = useState({
+    day: "",
+    month: "",
+    year: "",
+  });
+  const onChangeHandler = (e) => {
+    setMealDate({ ...mealDate, [e.target.name]: e.target.value });
+  };
+
   return (
     <>
       <Head>
@@ -12,7 +22,7 @@ const AddMeals = () => {
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/">
-            <ArrowLeft />
+            <ArrowLeft size="26" />
           </Link>
           <h1 className={styles.title}>Add Meal</h1>
         </header>
@@ -23,34 +33,31 @@ const AddMeals = () => {
               <div className={styles.date_container_group_item}>
                 <p>Day</p>
                 <input
-                  name="Day"
+                  name="day"
                   type="number"
-                  placeholder="01"
-                  value="01"
+                  value={mealDate.day}
                   className={styles.date_container_group_item_input}
-                  onChange={() => console.log("I'm changing day")}
+                  onChange={onChangeHandler}
                 />
               </div>
               <div className={styles.date_container_group_item}>
                 <p>Month</p>
                 <input
-                  name="Month"
-                  type="month"
-                  placeholder="January"
-                  value="January"
+                  name="month"
+                  type="number"
+                  value={mealDate.month}
                   className={styles.date_container_group_item_input}
-                  onChange={() => console.log("I'm changing month")}
+                  onChange={onChangeHandler}
                 />
               </div>
               <div className={styles.date_container_group_item}>
                 <p>Year</p>
                 <input
-                  name="Year"
+                  name="year"
                   type="number"
-                  placeholder="2023"
-                  value="2023"
+                  value={mealDate.year}
                   className={styles.date_container_group_item_input}
-                  onChange={() => console.log("I'm changing year")}
+                  onChange={onChangeHandler}
                 />
               </div>
             </div>
