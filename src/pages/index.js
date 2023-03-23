@@ -145,33 +145,54 @@ export default function Home() {
           </div>
 
           <>
-            {meals.map((mealGroup) => (
-              <div key={mealGroup.meal_type} className={styles.meal_list}>
-                <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
-                <ul className={styles.meals}>
-                  {mealGroup.meals.map((meal) => (
-                    <li className={styles.meal_details} key={meal.meal_name}>
-                      <>
-                        <Image
-                          src={meal.meal_photo_url}
-                          className={styles.meal_image}
-                          alt={`Image of ${meal.meal_name}`}
-                          width={60}
-                          height={60}
-                          priority={true}
-                        />
-                        <div className={styles.meal_description}>
-                          <p className={styles.meal_name}>{meal.meal_name}</p>
-                          <span className={styles.meal_calories}>
-                            {meal.meal_calories}
-                          </span>
-                        </div>
-                      </>
-                    </li>
-                  ))}
-                </ul>
+            {meals == 0 ? (
+              <div className={styles.empty_meal_list}>
+                <p>
+                  There are no meals added for this day.
+                  <br />
+                  You can go ahead and add your meals
+                </p>
+
+                <Link href="/add-meals">
+                  <button>Add my meals</button>
+                </Link>
               </div>
-            ))}
+            ) : (
+              <>
+                {meals.map((mealGroup) => (
+                  <div key={mealGroup.meal_type} className={styles.meal_list}>
+                    <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
+                    <ul className={styles.meals}>
+                      {mealGroup.meals.map((meal) => (
+                        <li
+                          className={styles.meal_details}
+                          key={meal.meal_name}
+                        >
+                          <>
+                            <Image
+                              src={meal.meal_photo_url}
+                              className={styles.meal_image}
+                              alt={`Image of ${meal.meal_name}`}
+                              width={60}
+                              height={60}
+                              priority={true}
+                            />
+                            <div className={styles.meal_description}>
+                              <p className={styles.meal_name}>
+                                {meal.meal_name}
+                              </p>
+                              <span className={styles.meal_calories}>
+                                {meal.meal_calories}
+                              </span>
+                            </div>
+                          </>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         </div>
       </main>

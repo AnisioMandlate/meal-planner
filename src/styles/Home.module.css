@@ -53,6 +53,32 @@
   font-size: 18px;
 }
 
+.empty_meal_list,
+.empty_meal_list button {
+  text-align: center;
+}
+
+.empty_meal_list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 45px 0 10px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.empty_meal_list button {
+  border: 0;
+  padding: 15px;
+  background-color: #017371;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 5px;
+  margin: 30px 0 0 0;
+}
+
 .meal_list {
   display: flex;
   justify-content: space-between;
