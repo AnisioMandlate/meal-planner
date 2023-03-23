@@ -6,9 +6,12 @@ import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
 import { PlusCircle } from "feather-icons-react";
 import { supabase } from "@/utils/supabase";
+import Loader from "@/components/Loader";
 
 export default function Home() {
   const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState();
 
   const NUMBER_DAYS = 6;
   const ORDER = [
@@ -24,13 +27,19 @@ export default function Home() {
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
 
   useEffect(() => {
-    getMeals();
+    getMeals(
+      `${presentDay.getFullYear()}/${
+        presentDay.getMonth() + 1
+      }/${presentDay.getDate()}`
+    );
   }, []);
 
-  const getMeals = () => {
+  const getMeals = (day) => {
+    setLoading(!loading);
     supabase
       .from("meals")
       .select("*")
+      .eq("date", day)
       .then(({ data }) => {
         setMeals(
           data
@@ -58,7 +67,7 @@ export default function Home() {
         );
       })
       .catch((err) => alert(err.message))
-      .finally();
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -78,9 +87,15 @@ export default function Home() {
             {days.map((day) => (
               <div
                 className={`${styles.week_day} ${
-                  presentDay.getDay() === day.getDay() && styles.active
+                  selectedDate
+                    ? selectedDate.getDay() === day.getDay() && styles.active
+                    : presentDay.getDay() === day.getDay() && styles.active
                 }`}
                 key={day}
+                onClick={() => {
+                  getMeals(format(day, "y/L/d"));
+                  setSelectedDate(day);
+                }}
               >
                 <p>{format(day, "EEE")}</p>
                 <span>{format(day, "d")}</span>
@@ -89,40 +104,72 @@ export default function Home() {
           </div>
 
           <div className={styles.current_date}>
-            <p>{format(presentDay, "EEEE, do LLLL")}</p>
+            <p>
+              {selectedDate
+                ? format(selectedDate, "EEEE, do LLLL")
+                : format(presentDay, "EEEE, do LLLL")}
+            </p>
           </div>
+          {loading ? (
+            <div className={styles.loading}>
+              <Loader bigSize={true} />
+            </div>
+          ) : (
+            <>
+              {meals == 0 ? (
+                <div className={styles.empty_meal_list}>
+                  <p>
+                    There are no meals added for this day.
+                    <br />
+                    You can go ahead and add your meals
+                  </p>
 
-          <>
-            {meals.map((mealGroup) => (
-              <div key={mealGroup.meal_type} className={styles.meal_list}>
-                <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
-                <ul className={styles.meals}>
-                  {mealGroup.meals.map((meal) => (
-                    <li className={styles.meal_details} key={meal.meal_name}>
-                      <>
-                        <Image
-                          src={meal.meal_photo_url}
-                          className={styles.meal_image}
-                          alt={`Image of ${meal.meal_name}`}
-                          width={60}
-                          height={60}
-                          placeholder="blur"
-                          blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
-                          style={{ width: "88px", height: "auto" }}
-                        />
-                        <div className={styles.meal_description}>
-                          <p className={styles.meal_name}>{meal.meal_name}</p>
-                          <span className={styles.meal_calories}>
-                            {meal.meal_calories}
-                          </span>
-                        </div>
-                      </>
-                    </li>
+                  <Link href="/add-meals">
+                    <button>Add my meals</button>
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {meals.map((mealGroup) => (
+                    <div key={mealGroup.meal_type} className={styles.meal_list}>
+                      <h2 className={styles.meal_type}>
+                        {mealGroup.meal_type}
+                      </h2>
+                      <ul className={styles.meals}>
+                        {mealGroup.meals.map((meal) => (
+                          <li
+                            className={styles.meal_details}
+                            key={meal.meal_name}
+                          >
+                            <>
+                              <Image
+                                src={meal.meal_photo_url}
+                                className={styles.meal_image}
+                                alt={`Image of ${meal.meal_name}`}
+                                width={60}
+                                height={60}
+                                placeholder="blur"
+                                blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
+                                style={{ width: "88px", height: "auto" }}
+                              />
+                              <div className={styles.meal_description}>
+                                <p className={styles.meal_name}>
+                                  {meal.meal_name}
+                                </p>
+                                <span className={styles.meal_calories}>
+                                  {meal.meal_calories}
+                                </span>
+                              </div>
+                            </>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
-              </div>
-            ))}
-          </>
+                </>
+              )}
+            </>
+          )}
         </div>
       </main>
     </>
