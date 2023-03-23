@@ -5,8 +5,8 @@
 }
 
 .loader {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
 }
 
 .loader.bigSize {
@@ -27,13 +27,14 @@
 }
 
 .loader div {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
 }
 
 .loader.bigSize div {
   width: 90px;
   height: 90px;
+  border-color: #017371 transparent transparent transparent;
 }
 
 .loader div:nth-child(1) {

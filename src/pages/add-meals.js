@@ -13,7 +13,7 @@ const AddMeals = () => {
   const router = useRouter();
   const mealPhotoRef = useRef(null);
   const [mealImage, setMealImage] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [mealDate, setMealDate] = useState({
     day: date.getDate(),
     month: date.getMonth() + 1,
