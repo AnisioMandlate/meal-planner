@@ -9,6 +9,7 @@ import { supabase } from "@/utils/supabase";
 
 export default function Home() {
   const [meals, setMeals] = useState([]);
+  const [selectedDate, setSelectedDate] = useState();
 
   const NUMBER_DAYS = 6;
   const ORDER = [
@@ -31,6 +32,12 @@ export default function Home() {
     supabase
       .from("meals")
       .select("*")
+      .eq(
+        "date",
+        `${presentDay.getFullYear()}/${
+          presentDay.getMonth() + 1
+        }/${presentDay.getDate()}`
+      )
       .then(({ data }) => {
         setMeals(
           data
@@ -61,6 +68,41 @@ export default function Home() {
       .finally();
   };
 
+  const onSelectedDateHandler = (day) => {
+    supabase
+      .from("meals")
+      .select("*")
+      .eq("date", day)
+      .then(({ data }) => {
+        setMeals(
+          data
+            .reduce((prev, crr) => {
+              const existingMeal = prev.find(
+                (el) =>
+                  el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
+              );
+
+              existingMeal
+                ? (existingMeal.meals = [...existingMeal.meals, crr])
+                : (prev = [
+                    ...prev,
+                    {
+                      meal_type: crr.meal_type.toLowerCase(),
+                      meals: [crr],
+                    },
+                  ]);
+
+              return prev;
+            }, [])
+            .sort(
+              (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
+            )
+        );
+      })
+      .catch((err) => console.log(err.message))
+      .finally();
+  };
+
   return (
     <>
       <Head>
@@ -78,9 +120,15 @@ export default function Home() {
             {days.map((day) => (
               <div
                 className={`${styles.week_day} ${
-                  presentDay.getDay() === day.getDay() && styles.active
+                  selectedDate
+                    ? selectedDate.getDay() === day.getDay() && styles.active
+                    : presentDay.getDay() === day.getDay() && styles.active
                 }`}
                 key={day}
+                onClick={() => {
+                  onSelectedDateHandler(format(day, "y/L/d"));
+                  setSelectedDate(day);
+                }}
               >
                 <p>{format(day, "EEE")}</p>
                 <span>{format(day, "d")}</span>
@@ -89,7 +137,11 @@ export default function Home() {
           </div>
 
           <div className={styles.current_date}>
-            <p>{format(presentDay, "EEEE, do LLLL")}</p>
+            <p>
+              {selectedDate
+                ? format(selectedDate, "EEEE, do LLLL")
+                : format(presentDay, "EEEE, do LLLL")}
+            </p>
           </div>
 
           <>
