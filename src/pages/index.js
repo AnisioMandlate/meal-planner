@@ -27,51 +27,14 @@ export default function Home() {
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
 
   useEffect(() => {
-    getMeals();
+    getMeals(
+      `${presentDay.getFullYear()}/${
+        presentDay.getMonth() + 1
+      }/${presentDay.getDate()}`
+    );
   }, []);
 
-  const getMeals = () => {
-    setLoading(!loading);
-    supabase
-      .from("meals")
-      .select("*")
-      .eq(
-        "date",
-        `${presentDay.getFullYear()}/${
-          presentDay.getMonth() + 1
-        }/${presentDay.getDate()}`
-      )
-      .then(({ data }) => {
-        setMeals(
-          data
-            .reduce((prev, crr) => {
-              const existingMeal = prev.find(
-                (el) =>
-                  el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
-              );
-
-              existingMeal
-                ? (existingMeal.meals = [...existingMeal.meals, crr])
-                : (prev = [
-                    ...prev,
-                    {
-                      meal_type: crr.meal_type.toLowerCase(),
-                      meals: [crr],
-                    },
-                  ]);
-
-              return prev;
-            }, [])
-            .sort(
-              (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
-            )
-        );
-      })
-      .catch((err) => alert(err.message))
-      .finally(() => setLoading(false));
-  };
-
-  const onSelectedDateHandler = (day) => {
+  const getMeals = (day) => {
     setLoading(!loading);
     supabase
       .from("meals")
@@ -103,7 +66,7 @@ export default function Home() {
             )
         );
       })
-      .catch((err) => console.log(err.message))
+      .catch((err) => alert(err.message))
       .finally(() => setLoading(false));
   };
 
@@ -130,7 +93,7 @@ export default function Home() {
                 }`}
                 key={day}
                 onClick={() => {
-                  onSelectedDateHandler(format(day, "y/L/d"));
+                  getMeals(format(day, "y/L/d"));
                   setSelectedDate(day);
                 }}
               >
