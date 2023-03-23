@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import Image from "next/image";
 import { addDays, eachDayOfInterval, format } from "date-fns";
-// Styles
 import styles from "@/styles/Home.module.css";
-// Images/Icons
-import { PlusCircle, Edit2 } from "feather-icons-react";
-import Breakfast from "@/assets/breakfast.jpg";
-import Beanstew from "@/assets/bean_stew.jpg";
-import Picanha from "@/assets/picanha.jpeg";
-import Snacks from "@/assets/snacks.jpeg";
-// API
+import { PlusCircle } from "feather-icons-react";
 import { supabase } from "@/utils/supabase";
 
 export default function Home() {
   const [meals, setMeals] = useState([]);
 
-  // Date Manipulation
   const NUMBER_DAYS = 6;
+  const ORDER = [
+    "breakfast",
+    "break lunch",
+    "lunch",
+    "snacks",
+    "dinner",
+    "late dinner",
+  ];
   const presentDay = new Date();
   const after07Days = addDays(presentDay, NUMBER_DAYS);
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
@@ -30,7 +31,32 @@ export default function Home() {
     supabase
       .from("meals")
       .select("*")
-      .then(({ data }) => setMeals(data))
+      .then(({ data }) => {
+        setMeals(
+          data
+            .reduce((prev, crr) => {
+              const existingMeal = prev.find(
+                (el) =>
+                  el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
+              );
+
+              existingMeal
+                ? (existingMeal.meals = [...existingMeal.meals, crr])
+                : (prev = [
+                    ...prev,
+                    {
+                      meal_type: crr.meal_type.toLowerCase(),
+                      meals: [crr],
+                    },
+                  ]);
+
+              return prev;
+            }, [])
+            .sort(
+              (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
+            )
+        );
+      })
       .catch((err) => alert(err.message))
       .finally();
   };
@@ -39,19 +65,23 @@ export default function Home() {
     <>
       <Head>
         <title>Meal Planner App</title>
-        <meta
-          name="description"
-          content="An app to keep track of your meals and how much you consume."
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
         <div className={styles.container}>
-          <h1>Meal Plan</h1>
+          <header className={styles.header}>
+            <h1>Meal Plan</h1>
+            <Link href="/add-meals">
+              <PlusCircle color="#017371" />
+            </Link>
+          </header>
           <div className={styles.week_days_grid}>
             {days.map((day) => (
-              <div className={styles.week_day} key={day}>
+              <div
+                className={`${styles.week_day} ${
+                  presentDay.getDay() === day.getDay() && styles.active
+                }`}
+                key={day}
+              >
                 <p>{format(day, "EEE")}</p>
                 <span>{format(day, "d")}</span>
               </div>
@@ -60,102 +90,38 @@ export default function Home() {
 
           <div className={styles.current_date}>
             <p>{format(presentDay, "EEEE, do LLLL")}</p>
-            <button>
-              <PlusCircle color="#017371" />
-            </button>
           </div>
 
           <>
-            <ul className={styles.meal_list}>
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Breakfast</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Breakfast}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>
-                      Pão com ovo estrelado e queijo
-                    </p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  {/* <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" size="14" />
-                  </button> */}
-                </div>
-              </li>
-
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Lunch</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Beanstew}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Feijoada</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Picanha}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Picanha</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-              </li>
-
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Snacks</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Snacks}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Frutas</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-              </li>
-
-              <li className={styles.meal}>
-                <h2 className={styles.meal_type}>Dinner</h2>
-                <div className={styles.meal_details}>
-                  <Image
-                    src={Beanstew}
-                    className={styles.meal_image}
-                    alt="Image of the meal"
-                  />
-                  <div className={styles.meal_description}>
-                    <p className={styles.meal_name}>Feijoada</p>
-                    <span className={styles.meal_calories}>200 cal</span>
-                  </div>
-                  <button className={styles.edit_meal_button}>
-                    <Edit2 color="#929CAD" />
-                  </button>
-                </div>
-              </li>
-            </ul>
+            {meals.map((mealGroup) => (
+              <div key={mealGroup.meal_type} className={styles.meal_list}>
+                <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
+                <ul className={styles.meals}>
+                  {mealGroup.meals.map((meal) => (
+                    <li className={styles.meal_details} key={meal.meal_name}>
+                      <>
+                        <Image
+                          src={meal.meal_photo_url}
+                          className={styles.meal_image}
+                          alt={`Image of ${meal.meal_name}`}
+                          width={60}
+                          height={60}
+                          placeholder="blur"
+                          blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
+                          style={{ width: "88px", height: "auto" }}
+                        />
+                        <div className={styles.meal_description}>
+                          <p className={styles.meal_name}>{meal.meal_name}</p>
+                          <span className={styles.meal_calories}>
+                            {meal.meal_calories}
+                          </span>
+                        </div>
+                      </>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </>
         </div>
       </main>

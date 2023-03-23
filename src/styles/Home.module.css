@@ -1,53 +1,67 @@
-.week_days_grid {
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header button {
+  border: 0;
+  background: none;
+}
+
+.week_days_grid,
+.current_date {
   margin-top: 25px;
+}
+
+.week_days_grid {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 60px);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow: -moz-scrollbars-none;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.week_days_grid::-webkit-scrollbar {
+  display: none;
 }
 
 .week_day {
-  border: 0.6px solid #000;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 7px 0;
-  height: 50px;
-  width: 42px;
+  height: 60px;
   font-weight: 500;
   font-size: 14px;
+  color: #0009;
 }
 
-.week_day:nth-child(1) {
-  color: #fff;
+.week_day.active {
+  color: #017371;
   font-weight: 600;
-  background-color: #017371;
-  border: 0.6px solid #fff;
+  border-bottom: 2px solid #017371;
 }
 
 .current_date {
   margin-top: 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   font-weight: 600;
   font-size: 18px;
-}
-
-.current_date button {
-  border: 0;
-  background: none;
 }
 
 .meal_list {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  margin-bottom: 20px;
-  list-style: none;
+  margin: 45px 0 10px 0;
 }
 
-.meal {
-  margin-top: 45px;
+.meals {
+  list-style: none;
 }
 
 .meal_type {
@@ -58,7 +72,7 @@
   text-transform: uppercase;
 }
 
-.meal .meal_details:not(:last-child) {
+.meals .meal_details:not(:last-child) {
   margin-bottom: 25px;
 }
 
@@ -68,8 +82,8 @@
 }
 
 .meal_image {
-  height: 60px;
-  width: auto;
+  height: auto;
+  width: 88px;
   background-size: cover;
   border-radius: 5px;
 }

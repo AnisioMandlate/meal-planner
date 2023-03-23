@@ -1,0 +1,128 @@
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin-left: 15px;
+}
+
+.meal_date_container,
+.meal_details_container {
+  margin-top: 25px;
+}
+
+.meal_date_container h2,
+.meal_details_container h2 {
+  text-transform: uppercase;
+  font-size: 18px;
+}
+
+.meal_date_container_group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.meal_date_container_group_item {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.meal_date_container_group_item p,
+.meal_details_container_group_item p {
+  color: #929cad;
+}
+
+.meal_date_container_group_item_input {
+  margin-top: 20px;
+  padding: 9px;
+  width: 100%;
+  border: 0;
+  border-bottom: 0.6px solid black;
+  text-align: center;
+  font-size: 18px;
+}
+
+.meal_date_container_group_item_input:active,
+.meal_date_container_group_item_input:focus,
+.meal_date_container_group_item_input:focus-visible,
+.meal_details_container_group_item_input:active,
+.meal_details_container_group_item_input:focus,
+.meal_details_container_group_item_input:focus-visible {
+  outline: 0;
+  color: #017371;
+  border-bottom: 2px solid #017371;
+}
+
+.meal_details_container_group {
+  margin-top: 15px;
+}
+
+.meal_details_container_group_item {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.meal_details_container_group_item_input {
+  width: 100%;
+  padding: 9px;
+  margin-top: 8px;
+  border: 0.6px solid black;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+.meal_details_image_upload_hidden {
+  display: none;
+}
+.meal_details_container_group_item_image_upload {
+  margin-top: 8px;
+  height: 250px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #d9d9d9;
+  border-radius: 5px;
+  outline: 0;
+  position: relative;
+}
+
+.meal_details_container_group_item_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clearImage {
+  padding: 10px;
+  border: 0;
+  border-radius: 5px;
+}
+
+.meal_details_container_group_item_image_upload img {
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.add_meal_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  width: 100%;
+  padding: 15px;
+  margin: 30px 0 20px 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 5px;
+  background-color: #017371;
+}
