@@ -109,6 +109,9 @@
 }
 
 .add_meal_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   width: 100%;
   padding: 15px;

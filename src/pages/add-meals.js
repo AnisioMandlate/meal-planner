@@ -1,13 +1,18 @@
 import { useState, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { ArrowLeft, Upload, XCircle } from "feather-icons-react";
+import { useRouter } from "next/router";
+import { ArrowLeft, Upload } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
 import { supabase } from "@/utils/supabase";
+import Loader from "@/components/Loader";
 
 const AddMeals = () => {
   const date = new Date();
+  const router = useRouter();
   const mealPhotoRef = useRef(null);
+  const [mealImage, setMealImage] = useState();
+  const [loading, setLoading] = useState(false);
   const [mealDate, setMealDate] = useState({
     day: date.getDate(),
     month: date.getMonth() + 1,
@@ -20,31 +25,21 @@ const AddMeals = () => {
     meal_calories: "",
   });
 
-  const onChangeDateHandler = (e) => {
+  const onHandleDateChange = (e) => {
     setMealDate({ ...mealDate, [e.target.name]: e.target.value });
   };
 
-  const onChangeMealDetails = (e) => {
+  const onHandleMealDetailsChange = (e) => {
     setMealDetails({ ...mealDetails, [e.target.name]: e.target.value });
   };
 
   const onImageChange = (e) => {
-    let image;
-
-    if (e.target.files) {
-      image = e.target.files[0];
+    let image = [];
+    for (let i = 0; i < e.target.files.length; i++) {
+      image.push(URL.createObjectURL(e.target.files[i]));
     }
-
-    supabase.storage
-      .from("images")
-      .upload(`public/${image?.name}`, image)
-      .then((res) => {
-        const { data } = supabase.storage
-          .from("images")
-          .getPublicUrl(res.data.path);
-        setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
-      })
-      .catch((err) => console.log(err.message));
+    setMealDetails({ ...mealDetails, meal_photo: image[0] });
+    setMealImage(e.target.files[0]);
   };
 
   const onHandleClearImage = () => {
@@ -52,7 +47,41 @@ const AddMeals = () => {
   };
 
   const onHandleSubmit = () => {
-    console.log("I was submited");
+    setLoading(!loading);
+    supabase.storage
+      .from("images")
+      .upload(`public/${mealImage?.name}`, mealImage)
+      .then((res) => {
+        const { data } = supabase.storage
+          .from("images")
+          .getPublicUrl(res.data.path);
+        setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
+        return data;
+      })
+      .then((data) => {
+        supabase
+          .from("meals")
+          .insert([
+            {
+              date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+              meal_photo_url: data.publicUrl,
+              meal_type: mealDetails.meal_type,
+              meal_name: mealDetails.meal_name,
+              meal_calories: mealDetails.meal_calories,
+            },
+          ])
+          .then(({ data }) => console.log(data));
+      })
+      .catch((err) => console.log(err.message))
+      .finally(() => {
+        setLoading(false);
+        router.push("/");
+      });
+    /**
+     * @TODO:
+     *  - Add EditMeal page:
+     *    - Use the AddMeal as EditMeal but pass the necessary parameters to allow editing
+     */
   };
 
   return (
@@ -79,7 +108,7 @@ const AddMeals = () => {
                   placeholder="01"
                   value={mealDate.day}
                   className={styles.meal_date_container_group_item_input}
-                  onChange={onChangeDateHandler}
+                  onChange={onHandleDateChange}
                 />
               </div>
               <div className={styles.meal_date_container_group_item}>
@@ -90,7 +119,7 @@ const AddMeals = () => {
                   placeholder="01"
                   value={mealDate.month}
                   className={styles.meal_date_container_group_item_input}
-                  onChange={onChangeDateHandler}
+                  onChange={onHandleDateChange}
                 />
               </div>
               <div className={styles.meal_date_container_group_item}>
@@ -101,7 +130,7 @@ const AddMeals = () => {
                   placeholder="2023"
                   value={mealDate.year}
                   className={styles.meal_date_container_group_item_input}
-                  onChange={onChangeDateHandler}
+                  onChange={onHandleDateChange}
                 />
               </div>
             </div>
@@ -148,7 +177,7 @@ const AddMeals = () => {
                       width="100%"
                     />
                   ) : (
-                    <p onClick={() => mealPhotoRef.current.click()}>
+                    <p>
                       <Upload size="34" />
                     </p>
                   )}
@@ -159,10 +188,10 @@ const AddMeals = () => {
                 <select
                   name="meal_type"
                   className={styles.meal_details_container_group_item_input}
-                  onChange={onChangeMealDetails}
+                  onChange={onHandleMealDetailsChange}
                 >
                   <option disabled selected>
-                    Breakfast
+                    Select meal type
                   </option>
                   <option value="Breakfast">Breakfast</option>
                   <option value="Lunch">Lunch</option>
@@ -178,7 +207,7 @@ const AddMeals = () => {
                   placeholder="Pão com ovo estrelado e queijo"
                   value={mealDetails.meal_name}
                   className={styles.meal_details_container_group_item_input}
-                  onChange={onChangeMealDetails}
+                  onChange={onHandleMealDetailsChange}
                 />
               </div>
               <div className={styles.meal_details_container_group_item}>
@@ -189,14 +218,14 @@ const AddMeals = () => {
                   placeholder="200"
                   value={mealDetails.meal_calories}
                   className={styles.meal_details_container_group_item_input}
-                  onChange={onChangeMealDetails}
+                  onChange={onHandleMealDetailsChange}
                 />
               </div>
             </div>
           </div>
 
           <button className={styles.add_meal_button} onClick={onHandleSubmit}>
-            Add meal
+            {loading ? <Loader /> : "Add meal"}
           </button>
         </div>
       </main>
