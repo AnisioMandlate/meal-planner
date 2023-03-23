@@ -106,7 +106,9 @@ export default function Home() {
                           alt={`Image of ${meal.meal_name}`}
                           width={60}
                           height={60}
-                          priority={true}
+                          placeholder="blur"
+                          blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
+                          style={{ width: "88px", height: "auto" }}
                         />
                         <div className={styles.meal_description}>
                           <p className={styles.meal_name}>{meal.meal_name}</p>

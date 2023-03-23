@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { ArrowLeft, Upload } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
@@ -70,12 +71,11 @@ const AddMeals = () => {
               meal_calories: mealDetails.meal_calories,
             },
           ])
-          .then(({ data }) => console.log(data));
+          .then(() => router.replace("/"));
       })
       .catch((err) => console.log(err.message))
       .finally(() => {
         setLoading(false);
-        router.replace("/");
       });
     /**
      * @TODO:
@@ -170,11 +170,15 @@ const AddMeals = () => {
                     onChange={onImageChange}
                   />
                   {mealDetails.meal_photo != "" ? (
-                    <img
+                    <Image
                       alt={`${mealDetails.meal_name} photo`}
                       src={mealDetails.meal_photo}
-                      height="100%"
-                      width="100%"
+                      height={100}
+                      width={100}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                      }}
                     />
                   ) : (
                     <p>

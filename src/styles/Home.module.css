@@ -82,8 +82,8 @@
 }
 
 .meal_image {
-  height: 60px;
-  width: auto;
+  height: auto;
+  width: 88px;
   background-size: cover;
   border-radius: 5px;
 }
