@@ -75,7 +75,7 @@ const AddMeals = () => {
       .catch((err) => console.log(err.message))
       .finally(() => {
         setLoading(false);
-        router.push("/");
+        router.replace("/");
       });
     /**
      * @TODO:
