@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
 import { PlusCircle, Edit2, Trash } from "feather-icons-react";
@@ -19,7 +18,6 @@ import {
 import "react-swipeable-list/dist/styles.css";
 
 export default function Home() {
-  const router = useRouter();
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState();
@@ -36,16 +34,15 @@ export default function Home() {
   const presentDay = new Date();
   const after07Days = addDays(presentDay, NUMBER_DAYS);
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
+  const today = `${presentDay.getFullYear()}/${
+    presentDay.getMonth() + 1
+  }/${presentDay.getDate()}`;
 
   useEffect(() => {
-    getMeals(
-      `${presentDay.getFullYear()}/${
-        presentDay.getMonth() + 1
-      }/${presentDay.getDate()}`
-    );
+    getMeals();
   }, []);
 
-  const getMeals = (day) => {
+  const getMeals = (day = today) => {
     setLoading(!loading);
     supabase
       .from("meals")
@@ -91,7 +88,7 @@ export default function Home() {
       .delete()
       .eq("id", id)
       .then(() => {
-        router.reload();
+        getMeals();
       })
       .catch(({ err }) => {
         alert(err.message);
@@ -220,35 +217,6 @@ export default function Home() {
                           </SwipeableListItem>
                         ))}
                       </SwipeableList>
-                      {/* <ul className={styles.meals}>
-                        {mealGroup.meals.map((meal) => (
-                          <li
-                            className={styles.meal_details}
-                            key={meal.meal_name}
-                          >
-                            <>
-                              <Image
-                                src={meal.meal_photo_url}
-                                className={styles.meal_image}
-                                alt={`Image of ${meal.meal_name}`}
-                                width={60}
-                                height={60}
-                                placeholder="blur"
-                                blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
-                                style={{ width: "88px", height: "auto" }}
-                              />
-                              <div className={styles.meal_description}>
-                                <p className={styles.meal_name}>
-                                  {meal.meal_name}
-                                </p>
-                                <span className={styles.meal_calories}>
-                                  {meal.meal_calories}
-                                </span>
-                              </div>
-                            </>
-                          </li>
-                        ))}
-                      </ul> */}
                     </div>
                   ))}
                 </>
