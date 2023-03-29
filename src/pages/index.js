@@ -4,9 +4,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
-import { PlusCircle } from "feather-icons-react";
+import { PlusCircle, Edit2, Trash } from "feather-icons-react";
 import { supabase } from "@/utils/supabase";
 import Loader from "@/components/Loader";
+import {
+  LeadingActions,
+  SwipeableList,
+  SwipeableListItem,
+  SwipeAction,
+  TrailingActions,
+  Type as ListType,
+} from "react-swipeable-list";
+import "react-swipeable-list/dist/styles.css";
 
 export default function Home() {
   const [meals, setMeals] = useState([]);
@@ -25,16 +34,15 @@ export default function Home() {
   const presentDay = new Date();
   const after07Days = addDays(presentDay, NUMBER_DAYS);
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
+  const today = `${presentDay.getFullYear()}/${
+    presentDay.getMonth() + 1
+  }/${presentDay.getDate()}`;
 
   useEffect(() => {
-    getMeals(
-      `${presentDay.getFullYear()}/${
-        presentDay.getMonth() + 1
-      }/${presentDay.getDate()}`
-    );
+    getMeals();
   }, []);
 
-  const getMeals = (day) => {
+  const getMeals = (day = today) => {
     setLoading(!loading);
     supabase
       .from("meals")
@@ -69,6 +77,46 @@ export default function Home() {
       .catch((err) => alert(err.message))
       .finally(() => setLoading(false));
   };
+
+  const handleEditMeal = (id) => {
+    console.log(`Edit meal with id ${id}`);
+  };
+
+  const handleDeleteMeal = (id) => {
+    supabase
+      .from("meals")
+      .delete()
+      .eq("id", id)
+      .then(() => {
+        getMeals();
+      })
+      .catch(({ err }) => {
+        alert(err.message);
+      })
+      .finally();
+  };
+
+  const leadingActions = (id) => (
+    <LeadingActions>
+      <SwipeAction onClick={() => handleEditMeal(id)}>
+        <div className={`${styles.swipe_element} ${styles.edit}`}>
+          <Edit2 size="20" />
+          Edit
+        </div>
+      </SwipeAction>
+    </LeadingActions>
+  );
+
+  const trailingActions = (id) => (
+    <TrailingActions>
+      <SwipeAction destructive={true} onClick={() => handleDeleteMeal(id)}>
+        <div className={`${styles.swipe_element} ${styles.delete}`}>
+          <Trash size="20" />
+          Delete
+        </div>
+      </SwipeAction>
+    </TrailingActions>
+  );
 
   return (
     <>
@@ -124,9 +172,7 @@ export default function Home() {
                     You can go ahead and add your meals
                   </p>
 
-                  <Link href="/add-meals">
-                    <button>Add my meals</button>
-                  </Link>
+                  <Link href="/add-meals">Add my meals</Link>
                 </div>
               ) : (
                 <>
@@ -135,11 +181,18 @@ export default function Home() {
                       <h2 className={styles.meal_type}>
                         {mealGroup.meal_type}
                       </h2>
-                      <ul className={styles.meals}>
+
+                      <SwipeableList
+                        fullSwipe={true}
+                        threshold={0.5}
+                        type={ListType.IOS}
+                      >
                         {mealGroup.meals.map((meal) => (
-                          <li
-                            className={styles.meal_details}
+                          <SwipeableListItem
                             key={meal.meal_name}
+                            leadingActions={leadingActions(meal.id)}
+                            trailingActions={trailingActions(meal.id)}
+                            style={styles.meal_details}
                           >
                             <>
                               <Image
@@ -161,9 +214,9 @@ export default function Home() {
                                 </span>
                               </div>
                             </>
-                          </li>
+                          </SwipeableListItem>
                         ))}
-                      </ul>
+                      </SwipeableList>
                     </div>
                   ))}
                 </>
