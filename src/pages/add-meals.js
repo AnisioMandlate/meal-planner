@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter, withRouter } from "next/router";
+import { format, parseISO } from "date-fns";
 import { ArrowLeft, Upload } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
 import { supabase } from "@/utils/supabase";
@@ -25,6 +26,26 @@ const AddMeals = () => {
     meal_name: "",
     meal_calories: "",
   });
+  const [fetchedDate, setFetchedDate] = useState();
+
+  useEffect(() => {
+    console.log(`Id of meal is this: ${router.query.id}`);
+    supabase
+      .from("meals")
+      .select("*")
+      .eq("id", router.query.id)
+      .then(({ data }) => {
+        setMealDetails({
+          ...mealDetails,
+          meal_photo: data[0].meal_photo_url,
+          meal_type: data[0].meal_type,
+          meal_name: data[0].meal_name,
+          meal_calories: data[0].meal_calories,
+        });
+
+        setFetchedDate(parseISO(data[0].date));
+      });
+  }, []);
 
   const onHandleDateChange = (e) => {
     setMealDate({ ...mealDate, [e.target.name]: e.target.value });
@@ -101,6 +122,7 @@ const AddMeals = () => {
             <h2>When:-</h2>
             <div className={styles.meal_date_container_group}>
               <div className={styles.meal_date_container_group_item}>
+                {console.log(format(fetchedDate, "y/L/d"))}
                 <p>Day</p>
                 <input
                   name="day"
@@ -193,6 +215,7 @@ const AddMeals = () => {
                   name="meal_type"
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
+                  value={mealDetails.meal_type}
                 >
                   <option disabled selected>
                     Select meal type
@@ -237,4 +260,4 @@ const AddMeals = () => {
   );
 };
 
-export default AddMeals;
+export default withRouter(AddMeals);
