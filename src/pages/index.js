@@ -81,12 +81,15 @@ export default function Home() {
   };
 
   const handleEditMeal = (id) => {
-    router.push({
-      pathname: "/add-meals",
-      query: {
-        id: id,
+    router.push(
+      {
+        pathname: "/add-meals",
+        query: {
+          id: id,
+        },
       },
-    });
+      "/add-meals"
+    );
   };
 
   const handleDeleteMeal = (id) => {

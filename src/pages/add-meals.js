@@ -26,7 +26,6 @@ const AddMeals = () => {
     meal_name: "",
     meal_calories: "",
   });
-  const [fetchedDate, setFetchedDate] = useState();
 
   useEffect(() => {
     console.log(`Id of meal is this: ${router.query.id}`);
@@ -43,8 +42,18 @@ const AddMeals = () => {
           meal_calories: data[0].meal_calories,
         });
 
-        setFetchedDate(parseISO(data[0].date));
-      });
+        return parseISO(data[0].date);
+      })
+      .then((data) => {
+        setMealDate({
+          ...mealDate,
+          day: format(data, "d"),
+          month: format(data, "L"),
+          year: format(data, "y"),
+        });
+      })
+      .catch((err) => alert(err.message))
+      .finally();
   }, []);
 
   const onHandleDateChange = (e) => {
@@ -122,7 +131,6 @@ const AddMeals = () => {
             <h2>When:-</h2>
             <div className={styles.meal_date_container_group}>
               <div className={styles.meal_date_container_group_item}>
-                {console.log(format(fetchedDate, "y/L/d"))}
                 <p>Day</p>
                 <input
                   name="day"
