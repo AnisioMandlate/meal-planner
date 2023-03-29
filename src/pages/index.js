@@ -7,6 +7,15 @@ import styles from "@/styles/Home.module.css";
 import { PlusCircle } from "feather-icons-react";
 import { supabase } from "@/utils/supabase";
 import Loader from "@/components/Loader";
+import {
+  LeadingActions,
+  SwipeableList,
+  SwipeableListItem,
+  SwipeAction,
+  TrailingActions,
+  Type as ListType,
+} from "react-swipeable-list";
+import "react-swipeable-list/dist/styles.css";
 
 export default function Home() {
   const [meals, setMeals] = useState([]);
@@ -69,6 +78,27 @@ export default function Home() {
       .catch((err) => alert(err.message))
       .finally(() => setLoading(false));
   };
+
+  const leadingActions = (name) => (
+    <LeadingActions>
+      <SwipeAction onClick={() => console.log(`Edit meal: ${name}`)}>
+        <div className={styles.swipe_element}></div>
+        Edit
+      </SwipeAction>
+    </LeadingActions>
+  );
+
+  const trailingActions = (name) => (
+    <TrailingActions>
+      <SwipeAction
+        destructive={true}
+        onClick={() => console.log(`Delete meal: ${name}`)}
+      >
+        <div className={styles.swipe_element}></div>
+        Delete
+      </SwipeAction>
+    </TrailingActions>
+  );
 
   return (
     <>
@@ -133,7 +163,43 @@ export default function Home() {
                       <h2 className={styles.meal_type}>
                         {mealGroup.meal_type}
                       </h2>
-                      <ul className={styles.meals}>
+
+                      <SwipeableList
+                        fullSwipe={true}
+                        threshold={0.5}
+                        type={ListType.IOS}
+                      >
+                        {mealGroup.meals.map((meal) => (
+                          <SwipeableListItem
+                            key={meal.meal_name}
+                            leadingActions={leadingActions(meal.meal_name)}
+                            trailingActions={trailingActions(meal.meal_name)}
+                            style={styles.meal_details}
+                          >
+                            <>
+                              <Image
+                                src={meal.meal_photo_url}
+                                className={styles.meal_image}
+                                alt={`Image of ${meal.meal_name}`}
+                                width={60}
+                                height={60}
+                                placeholder="blur"
+                                blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
+                                style={{ width: "88px", height: "auto" }}
+                              />
+                              <div className={styles.meal_description}>
+                                <p className={styles.meal_name}>
+                                  {meal.meal_name}
+                                </p>
+                                <span className={styles.meal_calories}>
+                                  {meal.meal_calories}
+                                </span>
+                              </div>
+                            </>
+                          </SwipeableListItem>
+                        ))}
+                      </SwipeableList>
+                      {/* <ul className={styles.meals}>
                         {mealGroup.meals.map((meal) => (
                           <li
                             className={styles.meal_details}
@@ -161,7 +227,7 @@ export default function Home() {
                             </>
                           </li>
                         ))}
-                      </ul>
+                      </ul> */}
                     </div>
                   ))}
                 </>

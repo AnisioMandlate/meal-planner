@@ -16,3 +16,12 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.swipeable-list .swipeable-list-item:not(:last-child) {
+  margin-bottom: 25px;
+}
+
+.swipeable-list-item {
+  display: flex;
+  align-items: center;
+}
