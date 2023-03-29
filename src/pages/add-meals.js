@@ -81,39 +81,85 @@ const AddMeals = () => {
 
   const onHandleSubmit = () => {
     setLoading(!loading);
-    supabase.storage
-      .from("images")
-      .upload(`public/${mealImage?.name}`, mealImage)
-      .then((res) => {
-        const { data } = supabase.storage
-          .from("images")
-          .getPublicUrl(res.data.path);
-        setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
-        return data;
-      })
-      .then((data) => {
-        supabase
-          .from("meals")
-          .insert([
-            {
-              date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
-              meal_photo_url: data.publicUrl,
-              meal_type: mealDetails.meal_type,
-              meal_name: mealDetails.meal_name,
-              meal_calories: mealDetails.meal_calories,
-            },
-          ])
-          .then(() => router.replace("/"));
-      })
-      .catch((err) => console.log(err.message))
-      .finally(() => {
-        setLoading(false);
-      });
-    /**
-     * @TODO:
-     *  - Add EditMeal page:
-     *    - Use the AddMeal as EditMeal but pass the necessary parameters to allow editing
-     */
+
+    if (mealId && mealImage == undefined) {
+      supabase
+        .from("meals")
+        .update([
+          {
+            date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+            meal_photo_url: mealDetails.meal_photo,
+            meal_type: mealDetails.meal_type,
+            meal_name: mealDetails.meal_name,
+            meal_calories: mealDetails.meal_calories,
+          },
+        ])
+        .eq("id", mealId)
+        .then(() => router.replace("/"))
+        .catch((err) => console.log(err.message))
+        .finally(() => {
+          setLoading(false);
+        });
+    } else if (mealId && mealImage != undefined) {
+      supabase.storage
+        .from("images")
+        .upload(`public/${mealImage?.name}`, mealImage)
+        .then((res) => {
+          const { data } = supabase.storage
+            .from("images")
+            .getPublicUrl(res.data.path);
+          setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
+          return data;
+        })
+        .then((data) => {
+          supabase
+            .from("meals")
+            .update([
+              {
+                date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+                meal_photo_url: data.publicUrl,
+                meal_type: mealDetails.meal_type,
+                meal_name: mealDetails.meal_name,
+                meal_calories: mealDetails.meal_calories,
+              },
+            ])
+            .eq("id", mealId)
+            .then(() => router.replace("/"));
+        })
+        .catch((err) => console.log(err.message))
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      supabase.storage
+        .from("images")
+        .upload(`public/${mealImage?.name}`, mealImage)
+        .then((res) => {
+          const { data } = supabase.storage
+            .from("images")
+            .getPublicUrl(res.data.path);
+          setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
+          return data;
+        })
+        .then((data) => {
+          supabase
+            .from("meals")
+            .insert([
+              {
+                date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+                meal_photo_url: data.publicUrl,
+                meal_type: mealDetails.meal_type,
+                meal_name: mealDetails.meal_name,
+                meal_calories: mealDetails.meal_calories,
+              },
+            ])
+            .then(() => router.replace("/"));
+        })
+        .catch((err) => console.log(err.message))
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
   return (
@@ -126,7 +172,7 @@ const AddMeals = () => {
           <Link href="/">
             <ArrowLeft size="26" />
           </Link>
-          <h1 className={styles.title}>Add Meal</h1>
+          <h1 className={styles.title}>{mealId ? "Edit meal" : "Add Meal"}</h1>
         </header>
         <div className={styles.content}>
           <div className={styles.meal_date_container}>
@@ -271,9 +317,12 @@ const AddMeals = () => {
                   className={`${styles.add_meal_button} ${
                     mealId && styles.cancel
                   }`}
-                  onClick={onHandleSubmit}
+                  onClick={() => {
+                    alert("You will be redirected to the homepage");
+                    router.replace("/");
+                  }}
                 >
-                  {loading ? <Loader /> : "Cancel"}
+                  Cancel
                 </button>
                 <button
                   className={`${styles.add_meal_button} ${
