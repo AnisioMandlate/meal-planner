@@ -74,14 +74,16 @@
   justify-content: center;
   flex-direction: column;
   margin: 45px 0 10px 0;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
 }
 
 .empty_meal_list a {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   margin: 30px 0 0 0;
+  color: #017371;
+  text-decoration: underline;
 }
 
 .meal_list {
@@ -105,11 +107,6 @@
 
 .meals .meal_details:not(:last-child) {
   margin-bottom: 25px;
-}
-
-.meal_details {
-  display: flex;
-  align-items: center;
 }
 
 .meal_image {
@@ -148,7 +145,7 @@
   font-size: 12px;
   padding: 8px;
   border-radius: 5px;
-  color: #fff;
+  background-color: #fff;
 }
 
 .swipe_element svg {
@@ -156,9 +153,9 @@
 }
 
 .swipe_element.edit {
-  background-color: #017371;
+  color: #017371;
 }
 
 .swipe_element.delete {
-  background-color: #e30000;
+  color: #e30000;
 }

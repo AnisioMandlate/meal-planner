@@ -193,7 +193,7 @@ export default function Home() {
                       </h2>
 
                       <SwipeableList
-                        fullSwipe={true}
+                        fullSwipe={false}
                         threshold={0.5}
                         type={ListType.IOS}
                       >
@@ -202,7 +202,6 @@ export default function Home() {
                             key={meal.meal_name}
                             leadingActions={leadingActions(meal.id)}
                             trailingActions={trailingActions(meal.id)}
-                            style={styles.meal_details}
                           >
                             <>
                               <Image
