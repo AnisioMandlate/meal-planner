@@ -12,6 +12,7 @@ import Loader from "@/components/Loader";
 const AddMeals = () => {
   const date = new Date();
   const router = useRouter();
+  const mealId = router.query.id;
   const mealPhotoRef = useRef(null);
   const [mealImage, setMealImage] = useState();
   const [loading, setLoading] = useState(false);
@@ -27,34 +28,35 @@ const AddMeals = () => {
     meal_calories: "",
   });
 
-  useEffect(() => {
-    console.log(`Id of meal is this: ${router.query.id}`);
-    supabase
-      .from("meals")
-      .select("*")
-      .eq("id", router.query.id)
-      .then(({ data }) => {
-        setMealDetails({
-          ...mealDetails,
-          meal_photo: data[0].meal_photo_url,
-          meal_type: data[0].meal_type,
-          meal_name: data[0].meal_name,
-          meal_calories: data[0].meal_calories,
-        });
+  mealId
+    ? useEffect(() => {
+        supabase
+          .from("meals")
+          .select("*")
+          .eq("id", mealId)
+          .then(({ data }) => {
+            setMealDetails({
+              ...mealDetails,
+              meal_photo: data[0].meal_photo_url,
+              meal_type: data[0].meal_type,
+              meal_name: data[0].meal_name,
+              meal_calories: data[0].meal_calories,
+            });
 
-        return parseISO(data[0].date);
-      })
-      .then((data) => {
-        setMealDate({
-          ...mealDate,
-          day: format(data, "d"),
-          month: format(data, "L"),
-          year: format(data, "y"),
-        });
-      })
-      .catch((err) => alert(err.message))
-      .finally();
-  }, []);
+            return parseISO(data[0].date);
+          })
+          .then((data) => {
+            setMealDate({
+              ...mealDate,
+              day: format(data, "d"),
+              month: format(data, "L"),
+              year: format(data, "y"),
+            });
+          })
+          .catch((err) => alert(err.message))
+          .finally();
+      }, [])
+    : null;
 
   const onHandleDateChange = (e) => {
     setMealDate({ ...mealDate, [e.target.name]: e.target.value });
@@ -223,7 +225,11 @@ const AddMeals = () => {
                   name="meal_type"
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
-                  value={mealDetails.meal_type}
+                  value={
+                    mealId || mealDetails.meal_type != ""
+                      ? mealDetails.meal_type
+                      : "Select meal type"
+                  }
                 >
                   <option disabled selected>
                     Select meal type
@@ -258,10 +264,35 @@ const AddMeals = () => {
               </div>
             </div>
           </div>
-
-          <button className={styles.add_meal_button} onClick={onHandleSubmit}>
-            {loading ? <Loader /> : "Add meal"}
-          </button>
+          <>
+            {mealId ? (
+              <div className={styles.mealButtonDiv}>
+                <button
+                  className={`${styles.add_meal_button} ${
+                    mealId && styles.cancel
+                  }`}
+                  onClick={onHandleSubmit}
+                >
+                  {loading ? <Loader /> : "Cancel"}
+                </button>
+                <button
+                  className={`${styles.add_meal_button} ${
+                    mealId && styles.edit_meal_button
+                  }`}
+                  onClick={onHandleSubmit}
+                >
+                  {loading ? <Loader /> : "Save changes"}
+                </button>
+              </div>
+            ) : (
+              <button
+                className={styles.add_meal_button}
+                onClick={onHandleSubmit}
+              >
+                {loading ? <Loader /> : "Add meal"}
+              </button>
+            )}
+          </>
         </div>
       </main>
     </>
