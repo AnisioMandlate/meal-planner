@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
-import { PlusCircle } from "feather-icons-react";
+import { PlusCircle, Edit2, Trash } from "feather-icons-react";
 import { supabase } from "@/utils/supabase";
 import Loader from "@/components/Loader";
 import {
@@ -82,8 +82,10 @@ export default function Home() {
   const leadingActions = (name) => (
     <LeadingActions>
       <SwipeAction onClick={() => console.log(`Edit meal: ${name}`)}>
-        <div className={styles.swipe_element}></div>
-        Edit
+        <div className={`${styles.swipe_element} ${styles.edit}`}>
+          <Edit2 size="20" />
+          Edit
+        </div>
       </SwipeAction>
     </LeadingActions>
   );
@@ -94,8 +96,10 @@ export default function Home() {
         destructive={true}
         onClick={() => console.log(`Delete meal: ${name}`)}
       >
-        <div className={styles.swipe_element}></div>
-        Delete
+        <div className={`${styles.swipe_element} ${styles.delete}`}>
+          <Trash size="20" />
+          Delete
+        </div>
       </SwipeAction>
     </TrailingActions>
   );
