@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
 import { PlusCircle, Edit2, Trash } from "feather-icons-react";
@@ -18,6 +19,7 @@ import {
 import "react-swipeable-list/dist/styles.css";
 
 export default function Home() {
+  const router = useRouter();
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState();
@@ -79,9 +81,27 @@ export default function Home() {
       .finally(() => setLoading(false));
   };
 
-  const leadingActions = (name) => (
+  const handleEditMeal = (id) => {
+    console.log(`Edit meal with id ${id}`);
+  };
+
+  const handleDeleteMeal = (id) => {
+    supabase
+      .from("meals")
+      .delete()
+      .eq("id", id)
+      .then(() => {
+        router.reload();
+      })
+      .catch(({ err }) => {
+        alert(err.message);
+      })
+      .finally();
+  };
+
+  const leadingActions = (id) => (
     <LeadingActions>
-      <SwipeAction onClick={() => console.log(`Edit meal: ${name}`)}>
+      <SwipeAction onClick={() => handleEditMeal(id)}>
         <div className={`${styles.swipe_element} ${styles.edit}`}>
           <Edit2 size="20" />
           Edit
@@ -90,12 +110,9 @@ export default function Home() {
     </LeadingActions>
   );
 
-  const trailingActions = (name) => (
+  const trailingActions = (id) => (
     <TrailingActions>
-      <SwipeAction
-        destructive={true}
-        onClick={() => console.log(`Delete meal: ${name}`)}
-      >
+      <SwipeAction destructive={true} onClick={() => handleDeleteMeal(id)}>
         <div className={`${styles.swipe_element} ${styles.delete}`}>
           <Trash size="20" />
           Delete
@@ -176,8 +193,8 @@ export default function Home() {
                         {mealGroup.meals.map((meal) => (
                           <SwipeableListItem
                             key={meal.meal_name}
-                            leadingActions={leadingActions(meal.meal_name)}
-                            trailingActions={trailingActions(meal.meal_name)}
+                            leadingActions={leadingActions(meal.id)}
+                            trailingActions={trailingActions(meal.id)}
                             style={styles.meal_details}
                           >
                             <>
