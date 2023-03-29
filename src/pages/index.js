@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { addDays, eachDayOfInterval, format } from "date-fns";
 import styles from "@/styles/Home.module.css";
 import { PlusCircle, Edit2, Trash } from "feather-icons-react";
@@ -18,6 +19,7 @@ import {
 import "react-swipeable-list/dist/styles.css";
 
 export default function Home() {
+  const router = useRouter();
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState();
@@ -79,7 +81,15 @@ export default function Home() {
   };
 
   const handleEditMeal = (id) => {
-    console.log(`Edit meal with id ${id}`);
+    router.push(
+      {
+        pathname: "/add-meals",
+        query: {
+          id: id,
+        },
+      },
+      "/add-meals"
+    );
   };
 
   const handleDeleteMeal = (id) => {
@@ -183,7 +193,7 @@ export default function Home() {
                       </h2>
 
                       <SwipeableList
-                        fullSwipe={true}
+                        fullSwipe={false}
                         threshold={0.5}
                         type={ListType.IOS}
                       >
@@ -192,7 +202,6 @@ export default function Home() {
                             key={meal.meal_name}
                             leadingActions={leadingActions(meal.id)}
                             trailingActions={trailingActions(meal.id)}
-                            style={styles.meal_details}
                           >
                             <>
                               <Image

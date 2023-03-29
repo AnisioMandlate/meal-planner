@@ -111,7 +111,16 @@
   object-fit: cover;
 }
 
-.add_meal_button {
+.mealButtonDiv {
+  display: flex;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add_meal_button,
+.add_meal_button.cancel,
+.add_meal_button.edit_meal_button {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -125,4 +134,13 @@
   color: #fff;
   border-radius: 5px;
   background-color: #017371;
+}
+
+.add_meal_button.cancel,
+.add_meal_button.edit_meal_button {
+  width: calc(100% / 2.1);
+}
+
+.add_meal_button.cancel {
+  background-color: #e30000;
 }

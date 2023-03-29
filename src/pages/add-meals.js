@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter, withRouter } from "next/router";
+import { format, parseISO } from "date-fns";
 import { ArrowLeft, Upload } from "feather-icons-react";
 import styles from "@/styles/AddMeals.module.css";
 import { supabase } from "@/utils/supabase";
@@ -11,6 +12,7 @@ import Loader from "@/components/Loader";
 const AddMeals = () => {
   const date = new Date();
   const router = useRouter();
+  const mealId = router.query.id;
   const mealPhotoRef = useRef(null);
   const [mealImage, setMealImage] = useState();
   const [loading, setLoading] = useState(false);
@@ -25,6 +27,36 @@ const AddMeals = () => {
     meal_name: "",
     meal_calories: "",
   });
+
+  mealId
+    ? useEffect(() => {
+        supabase
+          .from("meals")
+          .select("*")
+          .eq("id", mealId)
+          .then(({ data }) => {
+            setMealDetails({
+              ...mealDetails,
+              meal_photo: data[0].meal_photo_url,
+              meal_type: data[0].meal_type,
+              meal_name: data[0].meal_name,
+              meal_calories: data[0].meal_calories,
+            });
+
+            return parseISO(data[0].date);
+          })
+          .then((data) => {
+            setMealDate({
+              ...mealDate,
+              day: format(data, "d"),
+              month: format(data, "L"),
+              year: format(data, "y"),
+            });
+          })
+          .catch((err) => alert(err.message))
+          .finally();
+      }, [])
+    : null;
 
   const onHandleDateChange = (e) => {
     setMealDate({ ...mealDate, [e.target.name]: e.target.value });
@@ -49,39 +81,85 @@ const AddMeals = () => {
 
   const onHandleSubmit = () => {
     setLoading(!loading);
-    supabase.storage
-      .from("images")
-      .upload(`public/${mealImage?.name}`, mealImage)
-      .then((res) => {
-        const { data } = supabase.storage
-          .from("images")
-          .getPublicUrl(res.data.path);
-        setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
-        return data;
-      })
-      .then((data) => {
-        supabase
-          .from("meals")
-          .insert([
-            {
-              date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
-              meal_photo_url: data.publicUrl,
-              meal_type: mealDetails.meal_type,
-              meal_name: mealDetails.meal_name,
-              meal_calories: mealDetails.meal_calories,
-            },
-          ])
-          .then(() => router.replace("/"));
-      })
-      .catch((err) => console.log(err.message))
-      .finally(() => {
-        setLoading(false);
-      });
-    /**
-     * @TODO:
-     *  - Add EditMeal page:
-     *    - Use the AddMeal as EditMeal but pass the necessary parameters to allow editing
-     */
+
+    if (mealId && mealImage == undefined) {
+      supabase
+        .from("meals")
+        .update([
+          {
+            date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+            meal_photo_url: mealDetails.meal_photo,
+            meal_type: mealDetails.meal_type,
+            meal_name: mealDetails.meal_name,
+            meal_calories: mealDetails.meal_calories,
+          },
+        ])
+        .eq("id", mealId)
+        .then(() => router.replace("/"))
+        .catch((err) => console.log(err.message))
+        .finally(() => {
+          setLoading(false);
+        });
+    } else if (mealId && mealImage != undefined) {
+      supabase.storage
+        .from("images")
+        .upload(`public/${mealImage?.name}`, mealImage)
+        .then((res) => {
+          const { data } = supabase.storage
+            .from("images")
+            .getPublicUrl(res.data.path);
+          setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
+          return data;
+        })
+        .then((data) => {
+          supabase
+            .from("meals")
+            .update([
+              {
+                date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+                meal_photo_url: data.publicUrl,
+                meal_type: mealDetails.meal_type,
+                meal_name: mealDetails.meal_name,
+                meal_calories: mealDetails.meal_calories,
+              },
+            ])
+            .eq("id", mealId)
+            .then(() => router.replace("/"));
+        })
+        .catch((err) => console.log(err.message))
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      supabase.storage
+        .from("images")
+        .upload(`public/${mealImage?.name}`, mealImage)
+        .then((res) => {
+          const { data } = supabase.storage
+            .from("images")
+            .getPublicUrl(res.data.path);
+          setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
+          return data;
+        })
+        .then((data) => {
+          supabase
+            .from("meals")
+            .insert([
+              {
+                date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+                meal_photo_url: data.publicUrl,
+                meal_type: mealDetails.meal_type,
+                meal_name: mealDetails.meal_name,
+                meal_calories: mealDetails.meal_calories,
+              },
+            ])
+            .then(() => router.replace("/"));
+        })
+        .catch((err) => console.log(err.message))
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
   return (
@@ -94,7 +172,7 @@ const AddMeals = () => {
           <Link href="/">
             <ArrowLeft size="26" />
           </Link>
-          <h1 className={styles.title}>Add Meal</h1>
+          <h1 className={styles.title}>{mealId ? "Edit meal" : "Add Meal"}</h1>
         </header>
         <div className={styles.content}>
           <div className={styles.meal_date_container}>
@@ -193,6 +271,11 @@ const AddMeals = () => {
                   name="meal_type"
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
+                  value={
+                    mealId || mealDetails.meal_type != ""
+                      ? mealDetails.meal_type
+                      : "Select meal type"
+                  }
                 >
                   <option disabled selected>
                     Select meal type
@@ -227,14 +310,42 @@ const AddMeals = () => {
               </div>
             </div>
           </div>
-
-          <button className={styles.add_meal_button} onClick={onHandleSubmit}>
-            {loading ? <Loader /> : "Add meal"}
-          </button>
+          <>
+            {mealId ? (
+              <div className={styles.mealButtonDiv}>
+                <button
+                  className={`${styles.add_meal_button} ${
+                    mealId && styles.cancel
+                  }`}
+                  onClick={() => {
+                    alert("You will be redirected to the homepage");
+                    router.replace("/");
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={`${styles.add_meal_button} ${
+                    mealId && styles.edit_meal_button
+                  }`}
+                  onClick={onHandleSubmit}
+                >
+                  {loading ? <Loader /> : "Save changes"}
+                </button>
+              </div>
+            ) : (
+              <button
+                className={styles.add_meal_button}
+                onClick={onHandleSubmit}
+              >
+                {loading ? <Loader /> : "Add meal"}
+              </button>
+            )}
+          </>
         </div>
       </main>
     </>
   );
 };
 
-export default AddMeals;
+export default withRouter(AddMeals);
