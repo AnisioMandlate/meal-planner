@@ -124,9 +124,7 @@ export default function Home() {
                     You can go ahead and add your meals
                   </p>
 
-                  <Link href="/add-meals">
-                    <button>Add my meals</button>
-                  </Link>
+                  <Link href="/add-meals">Add my meals</Link>
                 </div>
               ) : (
                 <>
