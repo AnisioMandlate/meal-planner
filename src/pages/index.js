@@ -220,7 +220,7 @@ export default function Home() {
                                   {meal.meal_name}
                                 </p>
                                 <span className={styles.meal_calories}>
-                                  {meal.meal_calories}
+                                  {meal.meal_calories} kcal
                                 </span>
                               </div>
                             </>
