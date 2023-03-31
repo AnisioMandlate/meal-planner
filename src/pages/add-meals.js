@@ -28,35 +28,35 @@ const AddMeals = () => {
     meal_calories: "",
   });
 
-  mealId
-    ? useEffect(() => {
-        supabase
-          .from("meals")
-          .select("*")
-          .eq("id", mealId)
-          .then(({ data }) => {
-            setMealDetails({
-              ...mealDetails,
-              meal_photo: data[0].meal_photo_url,
-              meal_type: data[0].meal_type,
-              meal_name: data[0].meal_name,
-              meal_calories: data[0].meal_calories,
-            });
+  useEffect(() => {
+    if (mealId) {
+      supabase
+        .from("meals")
+        .select("*")
+        .eq("id", mealId)
+        .then(({ data }) => {
+          setMealDetails((prevMealDetails) => ({
+            ...prevMealDetails,
+            meal_photo: data[0].meal_photo_url,
+            meal_type: data[0].meal_type,
+            meal_name: data[0].meal_name,
+            meal_calories: data[0].meal_calories,
+          }));
 
-            return parseISO(data[0].date);
-          })
-          .then((data) => {
-            setMealDate({
-              ...mealDate,
-              day: format(data, "d"),
-              month: format(data, "L"),
-              year: format(data, "y"),
-            });
-          })
-          .catch((err) => alert(err.message))
-          .finally();
-      }, [])
-    : null;
+          return parseISO(data[0].date);
+        })
+        .then((data) => {
+          setMealDate((prevMealData) => ({
+            ...prevMealData,
+            day: format(data, "d"),
+            month: format(data, "L"),
+            year: format(data, "y"),
+          }));
+        })
+        .catch((err) => alert(err.message))
+        .finally();
+    }
+  }, [mealId]);
 
   const onHandleDateChange = (e) => {
     setMealDate({ ...mealDate, [e.target.name]: e.target.value });
@@ -277,7 +277,7 @@ const AddMeals = () => {
                       : "Select meal type"
                   }
                 >
-                  <option disabled selected>
+                  <option disabled value="Select meal type">
                     Select meal type
                   </option>
                   <option value="Breakfast">Breakfast</option>
