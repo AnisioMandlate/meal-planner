@@ -100,6 +100,7 @@ export default function Home() {
       .from("meals")
       .delete()
       .eq("id", id)
+      .then(() => {})
       .catch(({ err }) => {
         alert(err.message);
       })
