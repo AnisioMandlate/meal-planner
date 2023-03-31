@@ -51,30 +51,33 @@ export default function Home() {
       .select("*")
       .eq("date", day)
       .then(({ data }) => {
-        setMeals(
-          data
-            .reduce((prev, crr) => {
-              const existingMeal = prev.find(
-                (el) =>
-                  el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
-              );
+        if (data) {
+          setMeals(
+            data
+              .reduce((prev, crr) => {
+                const existingMeal = prev.find(
+                  (el) =>
+                    el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
+                );
 
-              existingMeal
-                ? (existingMeal.meals = [...existingMeal.meals, crr])
-                : (prev = [
-                    ...prev,
-                    {
-                      meal_type: crr.meal_type.toLowerCase(),
-                      meals: [crr],
-                    },
-                  ]);
+                existingMeal
+                  ? (existingMeal.meals = [...existingMeal.meals, crr])
+                  : (prev = [
+                      ...prev,
+                      {
+                        meal_type: crr.meal_type.toLowerCase(),
+                        meals: [crr],
+                      },
+                    ]);
 
-              return prev;
-            }, [])
-            .sort(
-              (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
-            )
-        );
+                return prev;
+              }, [])
+              .sort(
+                (a, b) =>
+                  ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
+              )
+          );
+        }
       })
       .catch((err) => alert(err.message))
       .finally(() => setLoading(false));
@@ -97,9 +100,6 @@ export default function Home() {
       .from("meals")
       .delete()
       .eq("id", id)
-      .then(() => {
-        getMeals();
-      })
       .catch(({ err }) => {
         alert(err.message);
       })
