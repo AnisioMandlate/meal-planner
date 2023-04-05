@@ -51,9 +51,10 @@ export default function Home() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "meals" },
         (payload) => {
+          //@TODO: fix this portion of the code. Make sure that the data is not displayed twice
           let data = payload.new;
-          setMeals([
-            ...meals,
+          setMeals((prevMeals) => [
+            ...prevMeals,
             {
               meal_type: data.meal_type.toLowerCase(),
               meals: [data],
