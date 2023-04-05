@@ -44,6 +44,30 @@ export default function Home() {
     getMeals();
   }, []);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel("realtime-meals")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "meals" },
+        (payload) => {
+          let data = payload.new;
+          setMeals([
+            ...meals,
+            {
+              meal_type: data.meal_type.toLowerCase(),
+              meals: [data],
+            },
+          ]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]);
+
   const getMeals = (day = today) => {
     setLoading(!loading);
     supabase
