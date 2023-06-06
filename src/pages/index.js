@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +20,7 @@ import "react-swipeable-list/dist/styles.css";
 
 export default function Home({ data }) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
   const [meals, setMeals] = useState([]);
   const [selectedDate, setSelectedDate] = useState();
 
@@ -36,28 +37,54 @@ export default function Home({ data }) {
   const after07Days = addDays(presentDay, NUMBER_DAYS);
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
 
+  const groupAndSortMeals = useCallback(
+    (newMeals) => {
+      const mealsArray = Array.isArray(newMeals) ? newMeals : [newMeals];
+      let updatedMeals = [...meals];
+
+      mealsArray.forEach((newMeal) => {
+        const mealGroupIndex = updatedMeals.findIndex(
+          (group) =>
+            group.meal_type.toLowerCase() === newMeal.meal_type.toLowerCase()
+        );
+
+        if (mealGroupIndex !== -1) {
+          updatedMeals[mealGroupIndex] = {
+            ...updatedMeals[mealGroupIndex],
+            meals: [...updatedMeals[mealGroupIndex].meals, newMeal],
+          };
+        } else {
+          updatedMeals = [
+            ...updatedMeals,
+            {
+              meal_type: newMeal.meal_type.toLowerCase(),
+              meals: [newMeal],
+            },
+          ];
+        }
+      });
+
+      const sortedMeals = updatedMeals.sort(
+        (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
+      );
+
+      return sortedMeals;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [meals]
+  );
+
   useEffect(() => {
-    setMeals(
-      data
-        .reduce((prev, crr) => {
-          const existingMeal = prev.find(
-            (el) => el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
-          );
+    router.isReady && setIsLoading(false);
+  }, [router]);
 
-          existingMeal
-            ? (existingMeal.meals = [...existingMeal.meals, crr])
-            : (prev = [
-                ...prev,
-                {
-                  meal_type: crr.meal_type.toLowerCase(),
-                  meals: [crr],
-                },
-              ]);
-
-          return prev;
-        }, [])
-        .sort((a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type))
-    );
+  useEffect(() => {
+    if (data && data.length) {
+      setMeals(groupAndSortMeals(data));
+    } else {
+      setMeals([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   useEffect(() => {
@@ -67,15 +94,7 @@ export default function Home({ data }) {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "meals" },
         (payload) => {
-          //@TODO: fix this portion of the code. Make sure that the data is not displayed twice
-          let data = payload.new;
-          setMeals((prevMeals) => [
-            ...prevMeals,
-            {
-              meal_type: data.meal_type.toLowerCase(),
-              meals: [data],
-            },
-          ]);
+          setMeals(groupAndSortMeals(payload.new));
         }
       )
       .subscribe();
@@ -83,14 +102,16 @@ export default function Home({ data }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meals, data]);
 
   const handleSelectedDate = (day) => {
+    setIsLoading(true);
     router.replace(
       {
         pathname: "/",
         query: {
-          day: day,
+          day,
         },
       },
       "/"
@@ -148,99 +169,108 @@ export default function Home({ data }) {
       <Head>
         <title>Meal Planner App</title>
       </Head>
-      <main className={styles.main}>
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <h1>Meal Plan</h1>
-            <Link href="/add-meals">
-              <PlusCircle color="#017371" />
-            </Link>
-          </header>
-          <div className={styles.week_days_grid}>
-            {days.map((day) => (
-              <div
-                className={`${styles.week_day} ${
-                  selectedDate
-                    ? selectedDate.getDay() === day.getDay() && styles.active
-                    : presentDay.getDay() === day.getDay() && styles.active
-                }`}
-                key={day}
-                onClick={() => {
-                  handleSelectedDate(format(day, "y/L/d"));
-                  setSelectedDate(day);
-                }}
-              >
-                <p>{format(day, "EEE")}</p>
-                <span>{format(day, "d")}</span>
-              </div>
-            ))}
-          </div>
+      <>
+        <header className={styles.header}>
+          <h1>Meal Plan</h1>
 
-          <div className={styles.current_date}>
-            <p>
-              {selectedDate
-                ? format(selectedDate, "EEEE, do LLLL")
-                : format(presentDay, "EEEE, do LLLL")}
-            </p>
-          </div>
-          <>
-            {meals == 0 ? (
-              <div className={styles.empty_meal_list}>
-                <p>
-                  There are no meals added for this day.
-                  <br />
-                  You can go ahead and add your meals
-                </p>
+          <Link href="/add-meals">
+            <PlusCircle color="#017371" />
+          </Link>
+        </header>
 
-                <Link href="/add-meals">Add my meals</Link>
-              </div>
-            ) : (
-              <>
-                {meals?.map((mealGroup) => (
-                  <div key={mealGroup.meal_type} className={styles.meal_list}>
-                    <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
-
-                    <SwipeableList
-                      fullSwipe={false}
-                      threshold={0.5}
-                      type={ListType.IOS}
-                    >
-                      {mealGroup.meals?.map((meal) => (
-                        <SwipeableListItem
-                          key={meal.meal_name}
-                          leadingActions={leadingActions(meal.id)}
-                          trailingActions={trailingActions(meal.id)}
-                        >
-                          <>
-                            <Image
-                              src={meal.meal_photo_url}
-                              className={styles.meal_image}
-                              alt={`Image of ${meal.meal_name}`}
-                              width={60}
-                              height={60}
-                              placeholder="blur"
-                              blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
-                              style={{ width: "88px", height: "auto" }}
-                            />
-                            <div className={styles.meal_description}>
-                              <p className={styles.meal_name}>
-                                {meal.meal_name}
-                              </p>
-                              <span className={styles.meal_calories}>
-                                {meal.meal_calories} kcal
-                              </span>
-                            </div>
-                          </>
-                        </SwipeableListItem>
-                      ))}
-                    </SwipeableList>
-                  </div>
-                ))}
-              </>
-            )}
-          </>
+        <div className={styles.week_days_grid}>
+          {days.map((day) => (
+            <div
+              className={`${styles.week_day} ${
+                selectedDate
+                  ? selectedDate.getDay() === day.getDay() && styles.active
+                  : presentDay.getDay() === day.getDay() && styles.active
+              }`}
+              key={day}
+              onClick={() => {
+                handleSelectedDate(format(day, "y/L/d"));
+                setSelectedDate(day);
+              }}
+            >
+              <p>{format(day, "EEE")}</p>
+              <span>{format(day, "d")}</span>
+            </div>
+          ))}
         </div>
-      </main>
+
+        <div className={styles.current_date}>
+          <p>
+            {selectedDate
+              ? format(selectedDate, "EEEE, do LLLL")
+              : format(presentDay, "EEEE, do LLLL")}
+          </p>
+        </div>
+        <>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
+              {meals == 0 ? (
+                <div className={styles.empty_meal_list}>
+                  <Image
+                    src="/images/empty-results.svg"
+                    alt="me"
+                    width="128"
+                    height="128"
+                  />
+                  <p>
+                    There are no meals added for this day.
+                    <br />
+                    You can go ahead and add your meals
+                  </p>
+
+                  <Link
+                    className={styles.empty_meal_list_add}
+                    href="/add-meals"
+                  >
+                    Add my meals
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {meals?.map((mealGroup) => (
+                    <div key={mealGroup.meal_type} className={styles.meal_list}>
+                      <h2 className={styles.meal_type}>
+                        {mealGroup.meal_type}
+                      </h2>
+
+                      <SwipeableList
+                        fullSwipe={false}
+                        threshold={0.5}
+                        type={ListType.IOS}
+                      >
+                        {mealGroup.meals?.map((meal) => (
+                          <SwipeableListItem
+                            key={meal.id}
+                            leadingActions={leadingActions(meal.id)}
+                            trailingActions={trailingActions(meal.id)}
+                          >
+                            <>
+                              <div className={styles.meal_description}>
+                                <p className={styles.meal_name}>
+                                  {meal.meal_name}
+                                </p>
+                                <span className={styles.meal_calories}>
+                                  {meal.meal_calories} kcal
+                                </span>
+                              </div>
+                            </>
+                          </SwipeableListItem>
+                        ))}
+                      </SwipeableList>
+                    </div>
+                  ))}
+                </>
+              )}
+            </>
+          )}
+        </>
+      </>
     </>
   );
 }

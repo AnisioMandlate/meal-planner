@@ -4,6 +4,13 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        <link
+          rel="preload"
+          href="/fonts/Biotif.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <meta
           name="description"
           content="An app to keep track of your meals and how much you consume."

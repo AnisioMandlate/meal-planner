@@ -14,7 +14,6 @@ const AddMeals = () => {
   const date = new Date();
   const router = useRouter();
   const mealId = router.query.id;
-  const mealPhotoRef = useRef(null);
   const [mealImage, setMealImage] = useState();
   const [loading, setLoading] = useState(false);
   const [mealDate, setMealDate] = useState({
@@ -67,29 +66,15 @@ const AddMeals = () => {
     setMealDetails({ ...mealDetails, [e.target.name]: e.target.value });
   };
 
-  const onImageChange = (e) => {
-    let image = [];
-    for (let i = 0; i < e.target.files.length; i++) {
-      image.push(URL.createObjectURL(e.target.files[i]));
-    }
-    setMealDetails({ ...mealDetails, meal_photo: image[0] });
-    setMealImage(e.target.files[0]);
-  };
-
-  const onHandleClearImage = () => {
-    setMealDetails({ ...mealDetails, meal_photo: "" });
-  };
-
   const onHandleSubmit = () => {
     setLoading(!loading);
 
-    if (mealId && mealImage == undefined) {
+    if (mealId) {
       supabase
         .from("meals")
         .update([
           {
             date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
-            meal_photo_url: mealDetails.meal_photo,
             meal_type: mealDetails.meal_type,
             meal_name: mealDetails.meal_name,
             meal_calories: mealDetails.meal_calories,
@@ -101,61 +86,18 @@ const AddMeals = () => {
         .finally(() => {
           setLoading(false);
         });
-    } else if (mealId && mealImage != undefined) {
-      supabase.storage
-        .from("images")
-        .upload(`public/${mealImage?.name}`, mealImage)
-        .then((res) => {
-          const { data } = supabase.storage
-            .from("images")
-            .getPublicUrl(res.data.path);
-          setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
-          return data;
-        })
-        .then((data) => {
-          supabase
-            .from("meals")
-            .update([
-              {
-                date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
-                meal_photo_url: data.publicUrl,
-                meal_type: mealDetails.meal_type,
-                meal_name: mealDetails.meal_name,
-                meal_calories: mealDetails.meal_calories,
-              },
-            ])
-            .eq("id", mealId)
-            .then(() => router.replace("/"));
-        })
-        .catch((err) => console.log(err.message))
-        .finally(() => {
-          setLoading(false);
-        });
     } else {
-      supabase.storage
-        .from("images")
-        .upload(`public/${mealImage?.name}`, mealImage)
-        .then((res) => {
-          const { data } = supabase.storage
-            .from("images")
-            .getPublicUrl(res.data.path);
-          setMealDetails({ ...mealDetails, meal_photo: data.publicUrl });
-          return data;
-        })
-        .then((data) => {
-          supabase
-            .from("meals")
-            .insert([
-              {
-                date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
-                meal_photo_url: data.publicUrl,
-                meal_type: mealDetails.meal_type,
-                meal_name: mealDetails.meal_name,
-                meal_calories: mealDetails.meal_calories,
-              },
-            ])
-            .then(() => router.replace("/"));
-        })
+      supabase
+        .from("meals")
+        .insert([
+          {
+            date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+            meal_type: mealDetails.meal_type,
+            meal_name: mealDetails.meal_name,
+            meal_calories: mealDetails.meal_calories,
+          },
+        ])
+        .then(() => router.replace("/"))
         .catch((err) => console.log(err.message))
         .finally(() => {
           setLoading(false);
@@ -168,7 +110,7 @@ const AddMeals = () => {
       <Head>
         <title>Meal Planner App</title>
       </Head>
-      <main className={styles.main}>
+      <>
         <header className={styles.header}>
           <Link href="/">
             <ArrowLeft size="26" />
@@ -219,61 +161,13 @@ const AddMeals = () => {
             <h2>Meal Details:-</h2>
             <div className={styles.meal_details_container_group}>
               <div className={styles.meal_details_container_group_item}>
-                <div
-                  className={styles.meal_details_container_group_item_header}
-                >
-                  <p>Photo</p>
-                  {mealDetails.meal_photo != "" ? (
-                    <button
-                      type="button"
-                      onClick={onHandleClearImage}
-                      className={styles.clearImage}
-                    >
-                      Clear Image
-                    </button>
-                  ) : null}
-                </div>
-                <div
-                  className={
-                    styles.meal_details_container_group_item_image_upload
-                  }
-                  onClick={() => mealPhotoRef.current.click()}
-                >
-                  <input
-                    name="meal_photo"
-                    type="file"
-                    accept="image/*"
-                    className={styles.meal_details_image_upload_hidden}
-                    multiple={false}
-                    ref={mealPhotoRef}
-                    onChange={onImageChange}
-                  />
-                  {mealDetails.meal_photo != "" ? (
-                    <Image
-                      alt={`${mealDetails.meal_name} photo`}
-                      src={mealDetails.meal_photo}
-                      height={100}
-                      width={100}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    />
-                  ) : (
-                    <p>
-                      <Upload size="34" />
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className={styles.meal_details_container_group_item}>
                 <p>Type</p>
                 <select
                   name="meal_type"
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
                   value={
-                    mealId || mealDetails.meal_type != ""
+                    mealId || mealDetails.meal_type
                       ? mealDetails.meal_type
                       : "Select meal type"
                   }
@@ -286,7 +180,9 @@ const AddMeals = () => {
                   <option value="Snacks">Snacks</option>
                   <option value="Dinner">Dinner</option>
                 </select>
+                <hr />
               </div>
+
               <div className={styles.meal_details_container_group_item}>
                 <p>Name</p>
                 <input
@@ -297,7 +193,9 @@ const AddMeals = () => {
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
                 />
+                <hr />
               </div>
+
               <div className={styles.meal_details_container_group_item}>
                 <p>Calories</p>
                 <input
@@ -308,6 +206,7 @@ const AddMeals = () => {
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
                 />
+                <hr />
               </div>
             </div>
           </div>
@@ -319,7 +218,6 @@ const AddMeals = () => {
                     mealId && styles.cancel
                   }`}
                   onClick={() => {
-                    alert("You will be redirected to the homepage");
                     router.replace("/");
                   }}
                 >
@@ -344,7 +242,7 @@ const AddMeals = () => {
             )}
           </>
         </div>
-      </main>
+      </>
     </>
   );
 };
