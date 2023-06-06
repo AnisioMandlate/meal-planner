@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,10 +18,10 @@ import {
 } from "react-swipeable-list";
 import "react-swipeable-list/dist/styles.css";
 
-export default function Home() {
+export default function Home({ data }) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
   const [meals, setMeals] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState();
 
   const NUMBER_DAYS = 6;
@@ -36,51 +36,86 @@ export default function Home() {
   const presentDay = new Date();
   const after07Days = addDays(presentDay, NUMBER_DAYS);
   const days = eachDayOfInterval({ start: presentDay, end: after07Days });
-  const today = `${presentDay.getFullYear()}/${
-    presentDay.getMonth() + 1
-  }/${presentDay.getDate()}`;
+
+  const groupAndSortMeals = useCallback(
+    (newMeals) => {
+      const mealsArray = Array.isArray(newMeals) ? newMeals : [newMeals];
+      let updatedMeals = [...meals];
+
+      mealsArray.forEach((newMeal) => {
+        const mealGroupIndex = updatedMeals.findIndex(
+          (group) =>
+            group.meal_type.toLowerCase() === newMeal.meal_type.toLowerCase()
+        );
+
+        if (mealGroupIndex !== -1) {
+          updatedMeals[mealGroupIndex] = {
+            ...updatedMeals[mealGroupIndex],
+            meals: [...updatedMeals[mealGroupIndex].meals, newMeal],
+          };
+        } else {
+          updatedMeals = [
+            ...updatedMeals,
+            {
+              meal_type: newMeal.meal_type.toLowerCase(),
+              meals: [newMeal],
+            },
+          ];
+        }
+      });
+
+      const sortedMeals = updatedMeals.sort(
+        (a, b) => ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
+      );
+
+      return sortedMeals;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [meals]
+  );
 
   useEffect(() => {
-    getMeals();
-  }, []);
+    router.isReady && setIsLoading(false);
+  }, [router]);
 
-  const getMeals = (day = today) => {
-    setLoading(!loading);
-    supabase
-      .from("meals")
-      .select("*")
-      .eq("date", day)
-      .then(({ data }) => {
-        if (data) {
-          setMeals(
-            data
-              .reduce((prev, crr) => {
-                const existingMeal = prev.find(
-                  (el) =>
-                    el.meal_type.toLowerCase() === crr.meal_type.toLowerCase()
-                );
+  useEffect(() => {
+    if (data && data.length) {
+      setMeals(groupAndSortMeals(data));
+    } else {
+      setMeals([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
-                existingMeal
-                  ? (existingMeal.meals = [...existingMeal.meals, crr])
-                  : (prev = [
-                      ...prev,
-                      {
-                        meal_type: crr.meal_type.toLowerCase(),
-                        meals: [crr],
-                      },
-                    ]);
-
-                return prev;
-              }, [])
-              .sort(
-                (a, b) =>
-                  ORDER.indexOf(a.meal_type) - ORDER.indexOf(b.meal_type)
-              )
-          );
+  useEffect(() => {
+    const channel = supabase
+      .channel("realtime-meals")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "meals" },
+        (payload) => {
+          setMeals(groupAndSortMeals(payload.new));
         }
-      })
-      .catch((err) => alert(err.message))
-      .finally(() => setLoading(false));
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meals, data]);
+
+  const handleSelectedDate = (day) => {
+    setIsLoading(true);
+    router.replace(
+      {
+        pathname: "/",
+        query: {
+          day,
+        },
+      },
+      "/"
+    );
   };
 
   const handleEditMeal = (id) => {
@@ -134,60 +169,71 @@ export default function Home() {
       <Head>
         <title>Meal Planner App</title>
       </Head>
-      <main className={styles.main}>
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <h1>Meal Plan</h1>
-            <Link href="/add-meals">
-              <PlusCircle color="#017371" />
-            </Link>
-          </header>
-          <div className={styles.week_days_grid}>
-            {days.map((day) => (
-              <div
-                className={`${styles.week_day} ${
-                  selectedDate
-                    ? selectedDate.getDay() === day.getDay() && styles.active
-                    : presentDay.getDay() === day.getDay() && styles.active
-                }`}
-                key={day}
-                onClick={() => {
-                  getMeals(format(day, "y/L/d"));
-                  setSelectedDate(day);
-                }}
-              >
-                <p>{format(day, "EEE")}</p>
-                <span>{format(day, "d")}</span>
-              </div>
-            ))}
-          </div>
+      <>
+        <header className={styles.header}>
+          <h1>Meal Plan</h1>
 
-          <div className={styles.current_date}>
-            <p>
-              {selectedDate
-                ? format(selectedDate, "EEEE, do LLLL")
-                : format(presentDay, "EEEE, do LLLL")}
-            </p>
-          </div>
-          {loading ? (
-            <div className={styles.loading}>
-              <Loader bigSize={true} />
+          <Link href="/add-meals">
+            <PlusCircle color="#017371" />
+          </Link>
+        </header>
+
+        <div className={styles.week_days_grid}>
+          {days.map((day) => (
+            <div
+              className={`${styles.week_day} ${
+                selectedDate
+                  ? selectedDate.getDay() === day.getDay() && styles.active
+                  : presentDay.getDay() === day.getDay() && styles.active
+              }`}
+              key={day}
+              onClick={() => {
+                handleSelectedDate(format(day, "y/L/d"));
+                setSelectedDate(day);
+              }}
+            >
+              <p>{format(day, "EEE")}</p>
+              <span>{format(day, "d")}</span>
             </div>
+          ))}
+        </div>
+
+        <div className={styles.current_date}>
+          <p>
+            {selectedDate
+              ? format(selectedDate, "EEEE, do LLLL")
+              : format(presentDay, "EEEE, do LLLL")}
+          </p>
+        </div>
+        <>
+          {isLoading ? (
+            <Loader />
           ) : (
             <>
               {meals == 0 ? (
                 <div className={styles.empty_meal_list}>
+                  <Image
+                    src="/images/empty-results.svg"
+                    alt="me"
+                    width="128"
+                    height="128"
+                  />
                   <p>
                     There are no meals added for this day.
                     <br />
                     You can go ahead and add your meals
                   </p>
 
-                  <Link href="/add-meals">Add my meals</Link>
+                  <Link
+                    className={styles.empty_meal_list_add}
+                    href="/add-meals"
+                  >
+                    Add my meals
+                  </Link>
                 </div>
               ) : (
                 <>
-                  {meals.map((mealGroup) => (
+                  {meals?.map((mealGroup) => (
                     <div key={mealGroup.meal_type} className={styles.meal_list}>
                       <h2 className={styles.meal_type}>
                         {mealGroup.meal_type}
@@ -198,23 +244,13 @@ export default function Home() {
                         threshold={0.5}
                         type={ListType.IOS}
                       >
-                        {mealGroup.meals.map((meal) => (
+                        {mealGroup.meals?.map((meal) => (
                           <SwipeableListItem
-                            key={meal.meal_name}
+                            key={meal.id}
                             leadingActions={leadingActions(meal.id)}
                             trailingActions={trailingActions(meal.id)}
                           >
                             <>
-                              <Image
-                                src={meal.meal_photo_url}
-                                className={styles.meal_image}
-                                alt={`Image of ${meal.meal_name}`}
-                                width={60}
-                                height={60}
-                                placeholder="blur"
-                                blurDataURL="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOsqa2pBwAE6AH2vfY2MAAAAABJRU5ErkJggg=="
-                                style={{ width: "88px", height: "auto" }}
-                              />
                               <div className={styles.meal_description}>
                                 <p className={styles.meal_name}>
                                   {meal.meal_name}
@@ -233,8 +269,25 @@ export default function Home() {
               )}
             </>
           )}
-        </div>
-      </main>
+        </>
+      </>
     </>
   );
+}
+
+export async function getServerSideProps({ query }) {
+  const presentDay = new Date();
+  const today = `${presentDay.getFullYear()}/${
+    presentDay.getMonth() + 1
+  }/${presentDay.getDate()}`;
+  let day = query.day;
+
+  const { data } = await supabase
+    .from("meals")
+    .select("*")
+    .eq("date", day ? day : today);
+
+  return {
+    props: { data },
+  };
 }
