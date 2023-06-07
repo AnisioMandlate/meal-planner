@@ -229,7 +229,7 @@ const AddMeals = () => {
                   }`}
                   onClick={onHandleSubmit}
                 >
-                  {loading ? <Loader /> : "Save changes"}
+                  {loading ? "Loading..." : "Save changes"}
                 </button>
               </div>
             ) : (
@@ -237,7 +237,7 @@ const AddMeals = () => {
                 className={styles.add_meal_button}
                 onClick={onHandleSubmit}
               >
-                {loading ? <Loader /> : "Add meal"}
+                {loading ? "Loading..." : "Add meal"}
               </button>
             )}
           </>

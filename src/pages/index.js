@@ -146,7 +146,7 @@ export default function Home({ data }) {
     <LeadingActions>
       <SwipeAction onClick={() => handleEditMeal(id)}>
         <div className={`${styles.swipe_element} ${styles.edit}`}>
-          <Edit2 size="20" />
+          <Edit2 size="30" />
           Edit
         </div>
       </SwipeAction>
