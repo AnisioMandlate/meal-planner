@@ -10,7 +10,7 @@
 }
 
 .week_days_grid {
-  margin: 55px 0;
+  margin: 25px 0 55px 0;
 }
 
 .loading {
@@ -116,6 +116,7 @@
 
 .meal_description {
   flex: 1;
+  margin: 0 12px;
 }
 
 .meal_name {
@@ -139,8 +140,8 @@
   align-items: center;
   justify-content: center !important;
   flex-direction: column;
-  font-size: 12px;
-  padding: 8px;
+  font-size: 14px;
+  padding: 3px;
   border-radius: 5px;
   background-color: #fff;
 }
