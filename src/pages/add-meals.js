@@ -119,7 +119,6 @@ const AddMeals = () => {
         </header>
         <div className={styles.content}>
           <div className={styles.meal_date_container}>
-            <h2>When:-</h2>
             <div className={styles.meal_date_container_group}>
               <div className={styles.meal_date_container_group_item}>
                 <p>Day</p>
@@ -158,7 +157,6 @@ const AddMeals = () => {
           </div>
 
           <div className={styles.meal_details_container}>
-            <h2>Meal Details:-</h2>
             <div className={styles.meal_details_container_group}>
               <div className={styles.meal_details_container_group_item}>
                 <p>Type</p>
