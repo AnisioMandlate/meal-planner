@@ -10,7 +10,7 @@
 }
 
 .week_days_grid {
-  margin: 25px 0 55px 0;
+  margin: 20px 0 20px 0;
 }
 
 .loading {
@@ -43,17 +43,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 7px 0;
-  height: 60px;
+  padding: 0 0 7px 0;
   font-weight: 500;
   font-size: 14px;
   color: #0009;
 }
 
 .week_day.active {
-  color: #017371;
+  color: #26a69a;
   font-weight: 600;
-  border-bottom: 2px solid #017371;
+  border-bottom: 2px solid #26a69a;
 }
 
 .current_date {
@@ -73,14 +72,16 @@
   justify-content: center;
   flex-direction: column;
   line-height: 28px;
+  margin-top: -70px;
+  min-height: 400px;
 }
 
 .empty_meal_list_add {
   font-weight: 600;
   margin-top: 60px;
   color: #fff;
-  background-color: #017371;
-  padding: 12px 25px;
+  background-color: #26a69a;
+  padding: 7px 25px;
   border-radius: 40px;
 }
 
@@ -151,7 +152,7 @@
 }
 
 .swipe_element.edit {
-  color: #017371;
+  color: #26a69a;
 }
 
 .swipe_element.delete {

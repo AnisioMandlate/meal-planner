@@ -1,9 +1,25 @@
 @font-face {
-  font-family: "Biotif";
+  font-family: "SFPro";
+  font-style: normal;
+  font-weight: 200;
+  font-display: optional;
+  src: url(/fonts/SFPro-Light.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "SFPro";
   font-style: normal;
   font-weight: 400;
   font-display: optional;
-  src: url(/fonts/Biotif.woff2) format("woff2");
+  src: url(/fonts/SFPro-Regular.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "SFPro";
+  font-style: normal;
+  font-weight: 600;
+  font-display: optional;
+  src: url(/fonts/SFPro-Bold.woff2) format("woff2");
 }
 
 * {
@@ -14,7 +30,7 @@
 
 html,
 body {
-  font-family: "Biotif";
+  font-family: "SFPro";
 }
 
 body {
@@ -31,7 +47,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 20px;
+  padding: 16px;
 }
 
 a {

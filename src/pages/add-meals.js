@@ -1,25 +1,26 @@
 import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, withRouter } from "next/router";
 import { format, parseISO } from "date-fns";
-import { ArrowLeft } from "feather-icons-react/build/IconComponents";
-import { Upload } from "feather-icons-react/build/IconComponents";
+import {
+  ArrowDownCircle,
+  ArrowLeft,
+} from "feather-icons-react/build/IconComponents";
 import styles from "@/styles/AddMeals.module.css";
 import { supabase } from "@/utils/supabase";
-import Loader from "@/components/Loader";
+import Select, { components, DropdownIndicator } from "react-select";
 
 const AddMeals = () => {
   const date = new Date();
   const router = useRouter();
   const mealId = router.query.id;
-  const [mealImage, setMealImage] = useState();
   const [loading, setLoading] = useState(false);
   const [mealDate, setMealDate] = useState({
     day: date.getDate(),
-    month: date.getMonth() + 1,
+    month: date.getMonth(),
     year: date.getFullYear(),
+    fullDate: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
   });
   const [mealDetails, setMealDetails] = useState({
     meal_photo: "",
@@ -27,7 +28,6 @@ const AddMeals = () => {
     meal_name: "",
     meal_calories: "",
   });
-
   useEffect(() => {
     if (mealId) {
       supabase
@@ -59,7 +59,15 @@ const AddMeals = () => {
   }, [mealId]);
 
   const onHandleDateChange = (e) => {
-    setMealDate({ ...mealDate, [e.target.name]: e.target.value });
+    const dateString = e.target.value.split("/");
+    const fullDate = `${dateString[2]}/${dateString[1]}/${dateString[0]}`;
+
+    setMealDate({
+      day: dateString[0],
+      month: dateString[1],
+      year: dateString[2],
+      fullDate,
+    });
   };
 
   const onHandleMealDetailsChange = (e) => {
@@ -74,7 +82,7 @@ const AddMeals = () => {
         .from("meals")
         .update([
           {
-            date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+            date: mealDate.fullDate,
             meal_type: mealDetails.meal_type,
             meal_name: mealDetails.meal_name,
             meal_calories: mealDetails.meal_calories,
@@ -91,7 +99,7 @@ const AddMeals = () => {
         .from("meals")
         .insert([
           {
-            date: `${mealDate.year}/0${mealDate.month}/${mealDate.day}`,
+            date: mealDate.fullDate,
             meal_type: mealDetails.meal_type,
             meal_name: mealDetails.meal_name,
             meal_calories: mealDetails.meal_calories,
@@ -103,6 +111,14 @@ const AddMeals = () => {
           setLoading(false);
         });
     }
+  };
+
+  const DropdownIndicator = (props) => {
+    return (
+      <components.DropdownIndicator {...props}>
+        <ArrowDownCircle size="16" />
+      </components.DropdownIndicator>
+    );
   };
 
   return (
@@ -118,67 +134,70 @@ const AddMeals = () => {
           <h1 className={styles.title}>{mealId ? "Edit meal" : "Add Meal"}</h1>
         </header>
         <div className={styles.content}>
-          <div className={styles.meal_date_container}>
-            <div className={styles.meal_date_container_group}>
-              <div className={styles.meal_date_container_group_item}>
-                <p>Day</p>
-                <input
-                  name="day"
-                  type="number"
-                  placeholder="01"
-                  value={mealDate.day}
-                  className={styles.meal_date_container_group_item_input}
-                  onChange={onHandleDateChange}
-                />
-              </div>
-              <div className={styles.meal_date_container_group_item}>
-                <p>Month</p>
-                <input
-                  name="month"
-                  type="number"
-                  placeholder="01"
-                  value={mealDate.month}
-                  className={styles.meal_date_container_group_item_input}
-                  onChange={onHandleDateChange}
-                />
-              </div>
-              <div className={styles.meal_date_container_group_item}>
-                <p>Year</p>
-                <input
-                  name="year"
-                  type="number"
-                  placeholder="2023"
-                  value={mealDate.year}
-                  className={styles.meal_date_container_group_item_input}
-                  onChange={onHandleDateChange}
-                />
-              </div>
-            </div>
-          </div>
-
           <div className={styles.meal_details_container}>
             <div className={styles.meal_details_container_group}>
+              <div className={styles.meal_details_container_flex}>
+                <div className={styles.meal_details_container_group_item}>
+                  <p>Date</p>
+                  <input
+                    name="fullDate"
+                    type="string"
+                    placeholder="DD/MM/YYYY"
+                    defaultValue={`${mealDate.day}/0${mealDate.month + 1}/${
+                      mealDate.year
+                    }`}
+                    className={styles.meal_details_container_group_item_input}
+                    onChange={onHandleDateChange}
+                  />
+                </div>
+                <div className={styles.meal_details_container_group_item}>
+                  <p>Calories</p>
+                  <input
+                    name="meal_calories"
+                    type="number"
+                    placeholder="200"
+                    value={mealDetails.meal_calories}
+                    className={styles.meal_details_container_group_item_input}
+                    onChange={onHandleMealDetailsChange}
+                  />
+                </div>
+              </div>
+
               <div className={styles.meal_details_container_group_item}>
                 <p>Type</p>
-                <select
-                  name="meal_type"
-                  className={styles.meal_details_container_group_item_input}
-                  onChange={onHandleMealDetailsChange}
-                  value={
-                    mealId || mealDetails.meal_type
-                      ? mealDetails.meal_type
-                      : "Select meal type"
+                <Select
+                  options={[
+                    { value: "Breakfast", label: "Breakfast" },
+                    { value: "Lunch", label: "Lunch" },
+                    { value: "Snacks", label: "Snacks" },
+                    { value: "Dinner", label: "Dinner" },
+                  ]}
+                  onChange={(e) =>
+                    onHandleMealDetailsChange({
+                      target: { name: "meal_type", value: e.value },
+                    })
                   }
-                >
-                  <option disabled value="Select meal type">
-                    Select meal type
-                  </option>
-                  <option value="Breakfast">Breakfast</option>
-                  <option value="Lunch">Lunch</option>
-                  <option value="Snacks">Snacks</option>
-                  <option value="Dinner">Dinner</option>
-                </select>
-                <hr />
+                  components={{
+                    DropdownIndicator,
+                    IndicatorSeparator: () => null,
+                  }}
+                  value={
+                    mealId && {
+                      value: mealDetails.meal_type,
+                      label: mealDetails.meal_type,
+                    }
+                  }
+                  placeholder={"Meal type"}
+                  theme={(theme) => ({
+                    ...theme,
+                    borderRadius: 13,
+                    colors: {
+                      ...theme.colors,
+                      primary25: "#80cbc4",
+                      primary: "#009688",
+                    },
+                  })}
+                />
               </div>
 
               <div className={styles.meal_details_container_group_item}>
@@ -191,24 +210,10 @@ const AddMeals = () => {
                   className={styles.meal_details_container_group_item_input}
                   onChange={onHandleMealDetailsChange}
                 />
-                <hr />
-              </div>
-
-              <div className={styles.meal_details_container_group_item}>
-                <p>Calories</p>
-                <input
-                  name="meal_calories"
-                  type="number"
-                  placeholder="200"
-                  value={mealDetails.meal_calories}
-                  className={styles.meal_details_container_group_item_input}
-                  onChange={onHandleMealDetailsChange}
-                />
-                <hr />
               </div>
             </div>
           </div>
-          <>
+          <div className={styles.button_container}>
             {mealId ? (
               <div className={styles.mealButtonDiv}>
                 <button
@@ -238,7 +243,7 @@ const AddMeals = () => {
                 {loading ? "Loading..." : "Add meal"}
               </button>
             )}
-          </>
+          </div>
         </div>
       </>
     </>
