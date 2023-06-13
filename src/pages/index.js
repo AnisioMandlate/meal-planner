@@ -79,11 +79,7 @@ export default function Home({ data }) {
   }, [router]);
 
   useEffect(() => {
-    if (data && data.length) {
-      setMeals(groupAndSortMeals(data));
-    } else {
-      setMeals([]);
-    }
+    data && data.length ? setMeals(groupAndSortMeals(data)) : setMeals([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
