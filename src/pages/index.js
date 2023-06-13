@@ -107,6 +107,7 @@ export default function Home({ data }) {
 
   const handleSelectedDate = (day) => {
     setIsLoading(true);
+    setMeals([]);
     router.replace(
       {
         pathname: "/",
@@ -174,7 +175,7 @@ export default function Home({ data }) {
           <h1>Meal Plan</h1>
 
           <Link href="/add-meals">
-            <PlusCircle color="#017371" />
+            <PlusCircle color="#26a69a" />
           </Link>
         </header>
 

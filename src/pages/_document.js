@@ -6,7 +6,21 @@ export default function Document() {
       <Head>
         <link
           rel="preload"
-          href="/fonts/Biotif.woff2"
+          href="/fonts/SFPro-Light.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/SFPro-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/SFPro-Bold.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
@@ -14,10 +28,6 @@ export default function Document() {
         <meta
           name="description"
           content="An app to keep track of your meals and how much you consume."
-        />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
         <meta name="theme-color" content="#fff" />
         <link rel="icon" href="/favicon.ico" />
