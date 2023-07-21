@@ -18,7 +18,6 @@
 }
 
 .meal_details_container {
-  flex: 1;
   margin-top: 30px;
 }
 
@@ -72,7 +71,7 @@
   background-position: calc(100% - 15px) center;
   background-size: 15px;
   border: none;
-  padding: 8px 0;
+  padding: 2rem 2.75rem;
 }
 
 .meal_date_container_group_item_input:active,
@@ -82,6 +81,7 @@
 .meal_details_container_group_item_input:focus,
 .meal_details_container_group_item_input:focus-visible {
   outline: 0;
+  box-shadow: 0 0 0 1px #009688;
 }
 
 .meal_details_container_group {
@@ -95,12 +95,13 @@
 
 .meal_details_container_group_item_input {
   width: 100%;
-  padding: 10px 8px;
+  padding: 2.125rem 2.5rem;
   border: 1px solid #ccc;
   font-size: 16px;
   height: 38px;
   border-radius: 13px;
   outline: 0;
+  transition: all 0.2s ease-in-out;
 }
 
 .meal_details_container_group_item_header {
@@ -133,8 +134,7 @@
   align-items: center;
   justify-content: center;
   border: 0;
-  width: 100%;
-  padding: 13px;
+  padding: 1.5rem 2.75rem;
   margin: 0;
   text-align: center;
   font-size: 16px;
@@ -142,6 +142,11 @@
   color: #fff;
   border-radius: 40px;
   background-color: #26a69a;
+}
+
+.add_meal_button:disabled,
+.add_meal_button[disabled] {
+  background-color: #babebe;
 }
 
 .add_meal_button.cancel {

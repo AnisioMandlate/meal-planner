@@ -29,6 +29,18 @@
   height: 25px;
 }
 
+.route_loader {
+  background: rgb(255 255 255);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 20px -2px,
+    rgba(0, 0, 0, 0.1) 0px 2px 20px -2px;
+  position: fixed;
+  width: 200px;
+  padding: 1.7rem 2.7rem;
+  border-radius: 20px;
+  bottom: 2rem;
+  right: 3rem;
+}
+
 .skeleton_loader:empty {
   width: 100%;
   height: 15px;

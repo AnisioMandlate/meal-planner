@@ -23,10 +23,8 @@ const AddMeals = () => {
     fullDate: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
   });
   const [mealDetails, setMealDetails] = useState({
-    meal_photo: "",
     meal_type: "",
     meal_name: "",
-    meal_calories: "",
   });
   useEffect(() => {
     if (mealId) {
@@ -37,10 +35,8 @@ const AddMeals = () => {
         .then(({ data }) => {
           setMealDetails((prevMealDetails) => ({
             ...prevMealDetails,
-            meal_photo: data[0].meal_photo_url,
             meal_type: data[0].meal_type,
             meal_name: data[0].meal_name,
-            meal_calories: data[0].meal_calories,
           }));
 
           return parseISO(data[0].date);
@@ -76,7 +72,6 @@ const AddMeals = () => {
 
   const onHandleSubmit = () => {
     setLoading(!loading);
-
     if (mealId) {
       supabase
         .from("meals")
@@ -85,7 +80,6 @@ const AddMeals = () => {
             date: mealDate.fullDate,
             meal_type: mealDetails.meal_type,
             meal_name: mealDetails.meal_name,
-            meal_calories: mealDetails.meal_calories,
           },
         ])
         .eq("id", mealId)
@@ -102,7 +96,6 @@ const AddMeals = () => {
             date: mealDate.fullDate,
             meal_type: mealDetails.meal_type,
             meal_name: mealDetails.meal_name,
-            meal_calories: mealDetails.meal_calories,
           },
         ])
         .then(() => router.replace("/"))
@@ -150,17 +143,6 @@ const AddMeals = () => {
                     onChange={onHandleDateChange}
                   />
                 </div>
-                <div className={styles.meal_details_container_group_item}>
-                  <p>Calories</p>
-                  <input
-                    name="meal_calories"
-                    type="number"
-                    placeholder="200"
-                    value={mealDetails.meal_calories}
-                    className={styles.meal_details_container_group_item_input}
-                    onChange={onHandleMealDetailsChange}
-                  />
-                </div>
               </div>
 
               <div className={styles.meal_details_container_group_item}>
@@ -188,6 +170,15 @@ const AddMeals = () => {
                     }
                   }
                   placeholder={"Meal type"}
+                  styles={{
+                    control: (baseStyle) => ({
+                      ...baseStyle,
+                      paddingTop: "1.18rem",
+                      paddingBottom: "1.18rem",
+                      paddingLeft: "2.4rem",
+                      paddingRight: "2.4rem",
+                    }),
+                  }}
                   theme={(theme) => ({
                     ...theme,
                     borderRadius: 13,
@@ -214,8 +205,8 @@ const AddMeals = () => {
             </div>
           </div>
           <div className={styles.button_container}>
-            {mealId ? (
-              <div className={styles.mealButtonDiv}>
+            <div className={styles.mealButtonDiv}>
+              {mealId && (
                 <button
                   className={`${styles.add_meal_button} ${
                     mealId && styles.cancel
@@ -226,23 +217,18 @@ const AddMeals = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  className={`${styles.add_meal_button} ${
-                    mealId && styles.edit_meal_button
-                  }`}
-                  onClick={onHandleSubmit}
-                >
-                  {loading ? "Loading..." : "Save changes"}
-                </button>
-              </div>
-            ) : (
+              )}
+
               <button
-                className={styles.add_meal_button}
+                className={`${styles.add_meal_button} ${
+                  mealId && styles.edit_meal_button
+                }`}
                 onClick={onHandleSubmit}
+                disabled={loading}
               >
-                {loading ? "Loading..." : "Add meal"}
+                {mealId ? "Save changes" : "Add new meal"}
               </button>
-            )}
+            </div>
           </div>
         </div>
       </>

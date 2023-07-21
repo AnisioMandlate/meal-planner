@@ -18,9 +18,8 @@ import {
 } from "react-swipeable-list";
 import "react-swipeable-list/dist/styles.css";
 
-export default function Home({ data }) {
+export default function Home({ data, isRouteLoading }) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
   const [meals, setMeals] = useState([]);
   const [selectedDate, setSelectedDate] = useState();
 
@@ -75,15 +74,7 @@ export default function Home({ data }) {
   );
 
   useEffect(() => {
-    router.isReady && setIsLoading(false);
-  }, [router]);
-
-  useEffect(() => {
-    if (data && data.length) {
-      setMeals(groupAndSortMeals(data));
-    } else {
-      setMeals([]);
-    }
+    data && data.length ? setMeals(groupAndSortMeals(data)) : setMeals([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
@@ -106,7 +97,6 @@ export default function Home({ data }) {
   }, [meals, data]);
 
   const handleSelectedDate = (day) => {
-    setIsLoading(true);
     setMeals([]);
     router.replace(
       {
@@ -206,71 +196,56 @@ export default function Home({ data }) {
               : format(presentDay, "EEEE, do LLLL")}
           </p>
         </div>
-        <>
-          {isLoading ? (
-            <Loader />
-          ) : (
-            <>
-              {meals == 0 ? (
-                <div className={styles.empty_meal_list}>
-                  <Image
-                    src="/images/empty-results.svg"
-                    alt="me"
-                    width="128"
-                    height="128"
-                  />
-                  <p>
-                    There are no meals added for this day.
-                    <br />
-                    You can go ahead and add your meals
-                  </p>
+        {meals.length === 0 ? (
+          <div className={styles.empty_meal_list}>
+            <Image
+              src="/images/empty-results.svg"
+              alt="me"
+              width="128"
+              height="128"
+            />
+            <p>
+              There are no meals added for this day.
+              <br />
+              You can go ahead and add your meals
+            </p>
 
-                  <Link
-                    className={styles.empty_meal_list_add}
-                    href="/add-meals"
-                  >
-                    Add my meals
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  {meals?.map((mealGroup) => (
-                    <div key={mealGroup.meal_type} className={styles.meal_list}>
-                      <h2 className={styles.meal_type}>
-                        {mealGroup.meal_type}
-                      </h2>
+            <Link className={styles.empty_meal_list_add} href="/add-meals">
+              Add my meals
+            </Link>
+          </div>
+        ) : (
+          <>
+            {meals?.map((mealGroup) => (
+              <div key={mealGroup.meal_type} className={styles.meal_list}>
+                <h2 className={styles.meal_type}>{mealGroup.meal_type}</h2>
 
-                      <SwipeableList
-                        fullSwipe={false}
-                        threshold={0.5}
-                        type={ListType.IOS}
-                      >
-                        {mealGroup.meals?.map((meal) => (
-                          <SwipeableListItem
-                            key={meal.id}
-                            leadingActions={leadingActions(meal.id)}
-                            trailingActions={trailingActions(meal.id)}
-                          >
-                            <>
-                              <div className={styles.meal_description}>
-                                <p className={styles.meal_name}>
-                                  {meal.meal_name}
-                                </p>
-                                <span className={styles.meal_calories}>
-                                  {meal.meal_calories} kcal
-                                </span>
-                              </div>
-                            </>
-                          </SwipeableListItem>
-                        ))}
-                      </SwipeableList>
-                    </div>
+                <SwipeableList
+                  fullSwipe={false}
+                  threshold={0.5}
+                  type={ListType.IOS}
+                >
+                  {mealGroup.meals?.map((meal) => (
+                    <SwipeableListItem
+                      key={meal.id}
+                      leadingActions={leadingActions(meal.id)}
+                      trailingActions={trailingActions(meal.id)}
+                    >
+                      <>
+                        <div className={styles.meal_description}>
+                          <p className={styles.meal_name}>{meal.meal_name}</p>
+                          <span className={styles.meal_calories}>
+                            {meal.meal_calories} kcal
+                          </span>
+                        </div>
+                      </>
+                    </SwipeableListItem>
                   ))}
-                </>
-              )}
-            </>
-          )}
-        </>
+                </SwipeableList>
+              </div>
+            ))}
+          </>
+        )}
       </>
     </>
   );
