@@ -70,8 +70,9 @@
   background-repeat: no-repeat;
   background-position: calc(100% - 15px) center;
   background-size: 15px;
-  border: none;
-  padding: 2rem 2.75rem;
+  border: 1px solid #ccc;
+  padding: 0 1.7rem;
+  height: 3.5rem;
 }
 
 .meal_date_container_group_item_input:active,
@@ -95,7 +96,7 @@
 
 .meal_details_container_group_item_input {
   width: 100%;
-  padding: 2.125rem 2.5rem;
+  padding: 1.7rem;
   border: 1px solid #ccc;
   font-size: 16px;
   height: 38px;

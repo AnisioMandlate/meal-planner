@@ -39,7 +39,8 @@ export const RouteLoader = () => {
       transition={{ ease: "easeInOut", duration: 0.3 }}
       className={styles.route_loader}
     >
-      Loading...
+      <span className={styles.route_loader_spinning} />
+      <p>Loading...</p>
     </motion.div>
   );
 };
