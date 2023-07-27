@@ -234,9 +234,6 @@ export default function Home({ data, isRouteLoading }) {
                       <>
                         <div className={styles.meal_description}>
                           <p className={styles.meal_name}>{meal.meal_name}</p>
-                          <span className={styles.meal_calories}>
-                            {meal.meal_calories} kcal
-                          </span>
                         </div>
                       </>
                     </SwipeableListItem>
